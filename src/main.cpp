@@ -1,15 +1,13 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "Containers/StaticHashTable.hpp"
-#include "MetricSpace.hpp"
-#include "Hash.hpp"
+#include "L2Space.hpp"
 
 int main (int argc, char* argv[])
 {
-    lsh::EuclideanHashFunction func(2, 4, 5, 2.0f);
+    L2::HashFunction func(2, 4, 5, 2.0f);
 
-    Point p;
+    L2::Point p;
 
     p.reserve(5);
 
@@ -20,7 +18,10 @@ int main (int argc, char* argv[])
 
     std::cout << p << std::endl;
 
-    std::cout << func(p) << std::endl;
+    for (auto x : func(p))
+    {
+        std::cout << x << std::endl;
+    }
 
 	return 0;
 }

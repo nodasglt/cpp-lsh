@@ -1,13 +1,13 @@
-template<typename T>
+template<typename BufferType, typename T>
 class Block
 {
  private:
     const unsigned int mOffset;
     const unsigned int mSize;
-    T* const mArray;
+    BufferType mArray;
 
  public:
-     Block (T* const buffer, unsigned int size, unsigned int offset) : mOffset(offset), mSize(size), mArray(buffer) {}
+     Block (BufferType buffer, unsigned int size, unsigned int offset) : mOffset(offset), mSize(size), mArray(buffer) {}
 
      Block (const Block&) = default;
 
@@ -16,24 +16,56 @@ class Block
          return mSize;
      }
 
-     T begin() const
+     class iterator
      {
-         return mArray;
+      private:
+         BufferType mData;
+         unsigned int mCurrentIndex;
+         const unsigned int mOffset;
+
+      public:
+
+         iterator(BufferType data, unsigned int initIndex, unsigned int offset) : mData(data), mCurrentIndex(initIndex), mOffset(offset) {}
+
+         bool operator!= (iterator other) const
+         {
+             return (mCurrentIndex != other.mCurrentIndex);
+         }
+
+         void operator++ ()
+         {
+             mCurrentIndex += mOffset;
+         }
+
+         T operator* () const
+         {
+             return mData[mCurrentIndex];
+         }
+
+         T& operator* ()
+         {
+             return mData[mCurrentIndex];
+         }
+     };
+
+     const iterator begin() const
+     {
+         return {mArray, 0, mOffset};
      }
 
-     T* const begin()
+     iterator begin()
      {
-         return mArray;
+         return {mArray, 0, mOffset};
      }
 
-     T end() const
+     const iterator end() const
      {
-         return mArray + mOffset * mSize;
+         return {mArray, mOffset * mSize, mOffset};
      }
 
-     T* const end()
+     iterator end()
      {
-         return mArray + mOffset * mSize;
+         return {mArray, mOffset * mSize, mOffset};
      }
 
      T operator[] (unsigned int i) const

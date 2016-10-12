@@ -1,3 +1,6 @@
+#ifndef __MATRIX_HPP__
+#define __MATRIX_HPP__
+
 #include <iostream>
 #include <iomanip>
 
@@ -73,22 +76,22 @@ class Matrix
          return mColSize;
      }
 
-     const Block<T> row (unsigned int i) const
+     const Block<T*, T> row (unsigned int i) const
      {
          return {mArray + mRowSize * i, mRowSize, 1};
      }
 
-     Block<T> row (unsigned int i)
+     Block<T*, T> row (unsigned int i)
      {
          return {mArray + mRowSize * i, mRowSize, 1};
      }
 
-     const Block<T> col (unsigned int i) const
+     const Block<T*, T> col (unsigned int i) const
      {
          return {mArray + i, mColSize, mRowSize};
      }
 
-     Block<T> col (unsigned int i)
+     Block<T*, T> col (unsigned int i)
      {
          return {mArray + i, mColSize, mRowSize};
      }
@@ -146,3 +149,6 @@ void eliminate (Matrix<T>& m)
         std::cout << m << std::endl;
     }
 }
+
+
+#endif /* end of include guard: __MATRIX_HPP__ */
