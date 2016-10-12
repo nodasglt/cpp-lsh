@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "HashTable.hpp"
+#include "Containers/StaticHashTable.hpp"
 #include "MetricSpace.hpp"
 #include "Hash.hpp"
 
