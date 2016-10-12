@@ -3,7 +3,7 @@
 
 #include "HashTable.hpp"
 #include "MetricSpace.hpp"
-#include "LSHashFunc.hpp"
+#include "Hash.hpp"
 
 int main (int argc, char* argv[])
 {

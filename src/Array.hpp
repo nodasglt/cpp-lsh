@@ -6,9 +6,6 @@
 #include <utility>
 #include <array>
 
-//TODO: add AllocatorType in template, use instead of raw new / delete;
-//TODO: implement Stack Allocator -- for static / small arrays
-
 template <typename T>
 class Array
 {
