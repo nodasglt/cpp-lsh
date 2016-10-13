@@ -1,13 +1,16 @@
+#ifndef __LSH_HASHSET_HPP__
+#define __LSH_HASHSET_HPP__
+
 #include <functional>
 
 #include "HashFunction.hpp"
 #include "DistanceFunction.hpp"
-#include "Containers/Array.hpp"
-#include "Containers/StaticHashMap.hpp"
+#include "../Containers/Array.hpp"
+#include "../Containers/StaticHashMap.hpp"
 
 namespace lsh
 {
-    template<typename PointType>;
+    template<typename PointType, typename PointTypeRef = PointType&>;
     class HashSet
     {
     private:
@@ -27,7 +30,7 @@ namespace lsh
             }
         }
 
-        void add (const PointType& x)
+        void add (const PointTypeRef x) /* NOTE: can be removed */
         {
             auto keySet = mHashFunc(x);
 
@@ -37,8 +40,10 @@ namespace lsh
             }
         }
 
-        unsigned int forEachNNinRange (unsigned int r, std::function<void (const PointType&)> func);
+        unsigned int forEachNNinRange (unsigned int r, std::function<void (const PointTypeRef)> func);
 
-        const PointType& operator[] (const PointType& p);
+        unsigned int operator[] (const PointTypeRef p);
     }
 }
+
+#endif /* end of include guard: __LSH_HASHSET_HPP__ */

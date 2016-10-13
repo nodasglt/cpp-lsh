@@ -1,3 +1,8 @@
+#ifndef __BLOCK_HPP__
+#define __BLOCK_HPP__
+
+#include <iomanip>
+
 template<typename BufferType, typename T>
 class Block
 {
@@ -11,7 +16,7 @@ class Block
 
      Block (const Block&) = default;
 
-     unsigned int getSize() const
+     unsigned int getLength() const
      {
          return mSize;
      }
@@ -81,7 +86,7 @@ class Block
      template<typename VectorType>
      Block& operator= (const VectorType& vec)
      {
-         if (mSize == vec.getSize())
+         if (mSize == vec.getLength())
          {
              for (int i = 0; i < mSize; ++i)
              {
@@ -190,3 +195,5 @@ std::ostream& operator<< (std::ostream &os, const Block<BufferType, T>& m)
 
     return os;
 }
+
+#endif /* end of include guard: __BLOCK_HPP__ */

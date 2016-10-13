@@ -2,14 +2,14 @@
 #include <cstdlib>
 
 #include "VectorSet.hpp"
+#include "Containers/Array.hpp"
+#include "EuclideanDistance.hpp"
+#include "EuclideanHash.hpp"
 
 int main(int argc, char const* argv[])
 {
-    VectorSetParser parser;
-
-    VectorSet data = parser.parse(argv[1]);
-
-    std::cout << data[2] << std::endl;
+    L2::HashFunction(5,5,5,5);
+    L2::DistanceFunction();
 
     return 0;
 }

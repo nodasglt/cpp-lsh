@@ -1,5 +1,5 @@
-#ifndef __HASHTABLE_H__
-#define __HASHTABLE_H__
+#ifndef __STATICHASHTABLE_HPP__
+#define __STATICHASHTABLE_HPP__
 
 #include <stdexcept>
 #include <functional>
@@ -142,4 +142,5 @@ std::ostream& operator<< (std::ostream& os, const StaticHashMap<T>& ht)
     return os;
 }
 
-#endif
+
+#endif /* end of include guard: __STATICHASHTABLE_HPP__ */

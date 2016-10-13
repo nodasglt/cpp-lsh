@@ -1,3 +1,6 @@
+#ifndef __VECTORSET_HPP__
+#define __VECTORSET_HPP__
+
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -5,13 +8,14 @@
 #include <cstdlib>
 #include <string>
 
-#include "DataSet.hpp"
+#include "Containers/Matrix.hpp"
+#include "MetricSpace/DataSet.hpp"
 
 enum class Metric { undefined, euclidean, manhattan, cosine };
 
 class VectorSetParser;
 
-class VectorSet : DataSet<Block<double*, double>>
+class VectorSet : public DataSet<Block<double*, double>, Block<double*, double>>
 {
  private:
     Matrix<double> mVectors;
@@ -48,3 +52,5 @@ class VectorSetParser
     unsigned int getVectorNum(const std::string& fileName) const;
     unsigned int getVectorDim(const std::string& fileName) const;
 };
+
+#endif /* end of include guard: __VECTORSET_HPP__ */
