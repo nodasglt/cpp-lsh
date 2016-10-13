@@ -1,7 +1,19 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "DataSet.hpp"
+#include "VectorSet.hpp"
+
+int main(int argc, char const* argv[])
+{
+    VectorSetParser parser;
+
+    VectorSet data = parser.parse(argv[1]);
+
+    std::cout << data[2] << std::endl;
+
+    return 0;
+}
+
 /*
 int main (int argc, char* argv[])
 {
