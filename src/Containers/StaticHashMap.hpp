@@ -7,7 +7,7 @@
 #include "Array.hpp"
 
 template <typename T>
-class StaticHashTable
+class StaticHashMap
 {
   public:
 
@@ -41,9 +41,9 @@ class StaticHashTable
 
   public:
 
-	explicit StaticHashTable (const unsigned int size) : mTable(size) {}
+	explicit StaticHashMap (const unsigned int size) : mTable(size) {}
 
-	~StaticHashTable () {}
+	~StaticHashMap () {}
 
     bool exists (const unsigned int key) const
     {
@@ -123,15 +123,15 @@ class StaticHashTable
     }
 
     template <typename M>
-    friend std::ostream& operator<< (std::ostream& os, const StaticHashTable<M>& ht);
+    friend std::ostream& operator<< (std::ostream& os, const StaticHashMap<M>& ht);
 };
 
 template <typename T>
-std::ostream& operator<< (std::ostream& os, const StaticHashTable<T>& ht)
+std::ostream& operator<< (std::ostream& os, const StaticHashMap<T>& ht)
 {
     os << '{';
     bool first = true;
-    ht.for_each([&] (const typename StaticHashTable<T>::Pair& x)
+    ht.for_each([&] (const typename StaticHashMap<T>::Pair& x)
     {
         if (!first) os << ", "; else first = false;
 

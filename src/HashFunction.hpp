@@ -14,56 +14,11 @@ namespace lsh
             const HashFunction& mHashData;
             const PointType& mPoint;
 
-            class iterator
-            {
-             private:
-                 unsigned int mIndex;
-                 const KeyGenerator& mKeyGen;
-
-             public:
-                 iterator (unsigned int index, const KeyGenerator& keyGen) : mIndex(index), mKeyGen(keyGen) {}
-
-                 bool operator!= (iterator other) const
-                 {
-                     return (mIndex != other.mIndex);
-                 }
-
-                 void operator++ ()
-                 {
-                     mIndex++;
-                 }
-
-                 uint64_t operator* () const
-                 {
-                     return mKeyGen.mHashData.getKeyAtIndex(mKeyGen.mPoint, mIndex);
-                 }
-            };
-
             KeyGenerator (const HashFunction& hashData, const PointType& dataPoint) : mHashData(hashData), mPoint(dataPoint) {}
 
             uint64_t operator[] (unsigned int i) const
             {
                 return mHashData.getKeyAtIndex(mPoint, i);
-            }
-
-            iterator begin()
-            {
-                return {0, *this};
-            }
-
-            const iterator begin() const
-            {
-                return {0, *this};
-            }
-
-            iterator end()
-            {
-                return {mHashData.getKeyNum(), *this};
-            }
-
-            const iterator end() const
-            {
-                return {mHashData.getKeyNum(), *this};
             }
         };
 

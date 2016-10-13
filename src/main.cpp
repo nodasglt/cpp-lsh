@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "L2Space.hpp"
-
+#include "DataSet.hpp"
+/*
 int main (int argc, char* argv[])
 {
     L2::HashFunction func(2, 4, 5, 2.0f);
@@ -25,3 +25,4 @@ int main (int argc, char* argv[])
 
 	return 0;
 }
+*/
