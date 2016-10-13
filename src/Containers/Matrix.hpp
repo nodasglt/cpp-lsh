@@ -15,10 +15,7 @@ class Matrix
     T* mArray;
 
  public:
-     Matrix(unsigned int rows, unsigned int cols) : mRowSize(cols), mColSize(rows), mArray(new T[mRowSize * mColSize])
-     {
-         std::cout << "Ctr default" << std::endl;
-     }
+     Matrix(unsigned int rows, unsigned int cols) : mRowSize(cols), mColSize(rows), mArray(new T[mRowSize * mColSize]) {}
 
      Matrix(unsigned int rows, unsigned int cols, std::initializer_list<T> ilist) : Matrix(rows, cols)
      {
@@ -32,7 +29,6 @@ class Matrix
 
      Matrix(const Matrix& other) : Matrix(other.mColSize, other.mRowSize)
      {
-         std::cout << "Ctr copy" << std::endl;
          for (unsigned int i = 0; i < (mColSize * mRowSize); ++i)
          {
              mArray[i] = other.mArray[i];
@@ -41,7 +37,6 @@ class Matrix
 
      Matrix(Matrix&& other) : mRowSize(other.mRowSize), mColSize(other.mColSize), mArray(other.mArray)
      {
-         std::cout << "Ctr move" << std::endl;
          other.mArray = nullptr;
      }
 
@@ -108,10 +103,20 @@ class Matrix
 
      ~Matrix()
      {
-         std::cout << "Dtr" << std::endl;
          delete [] mArray;
      }
+
+     template<typename G>
+     friend void std::swap(Matrix<G>& A, Matrix<G>& B);
 };
+
+template<typename T>
+void std::swap(Matrix<T>& A, Matrix<T>& B)
+{
+    std::swap(A.mColSize, B.mColSize);
+    std::swap(A.mRowSize, B.mRowSize);
+    std::swap(A.mArray, B.mArray);
+}
 
 template <typename T>
 std::ostream& operator<< (std::ostream &os, const Matrix<T>& m)
@@ -125,7 +130,7 @@ std::ostream& operator<< (std::ostream &os, const Matrix<T>& m)
         for (unsigned int j = 0; j < m.getRowSize(); ++j)
         {
             if (!first) os << ","; else first = false;
-            os << std::setprecision(1) << std::setw(5) << m(i, j);
+            os << std::setw(5) << m(i, j);
         }
 
         os << ']' << std::endl;
@@ -133,22 +138,5 @@ std::ostream& operator<< (std::ostream &os, const Matrix<T>& m)
 
     return os;
 }
-
-template<typename T>
-void eliminate (Matrix<T>& m)
-{
-    for (unsigned int i = 0; i < m.getColSize(); ++i)
-    {
-        m.row(i) /= m(i, i);
-
-        for (unsigned int j = i + 1; j < m.getColSize(); ++j)
-        {
-            m.row(j) -= m.row(i) * m(j, i);
-        }
-
-        std::cout << m << std::endl;
-    }
-}
-
 
 #endif /* end of include guard: __MATRIX_HPP__ */

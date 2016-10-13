@@ -172,3 +172,21 @@ class Block
          return *this;
      }
 };
+
+template<typename BufferType, typename T>
+std::ostream& operator<< (std::ostream &os, const Block<BufferType, T>& m)
+{
+    os << '[';
+
+    bool first = true;
+
+    for (auto x : m)
+    {
+        if (!first) os << ","; else first = false;
+        os << std::setw(5) << x;
+    }
+
+    os << ']' << std::endl;
+
+    return os;
+}
