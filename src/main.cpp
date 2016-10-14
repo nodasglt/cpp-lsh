@@ -1,15 +1,27 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <random>
 
 #include "MetricSpace/Euclidean/DataSet.hpp"
 #include "Containers/Array.hpp"
 #include "MetricSpace/Euclidean/L2/Metric.hpp"
 #include "MetricSpace/Euclidean/Euclidean.hpp"
 #include "LocalitySensitiveHashing/HashSet.hpp"
+#include "Util/Random.hpp"
 
 int main(int argc, char const* argv[])
 {
+    std::default_random_engine gen(std::atoi(argv[1]));
+    Util::Random random(gen);
+
+    for (int i = 0; i < 100; ++i)
+    {
+        std::cout << random.nextDouble(-10, 10) << std::endl;
+    }
+
+    return 0;
+
     using namespace MetricSpace;
 
     Euclidean::DataSet data = Euclidean::DataSetParser().parse(argv[1]);
