@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <ctime>
 
 #include "MetricSpace/Euclidean/DataSet.hpp"
 #include "Containers/Array.hpp"
@@ -13,28 +14,45 @@ int main(int argc, char const* argv[])
 
     Euclidean::DataSet data = Euclidean::DataSetParser().parse(argv[1]);
 
-    Euclidean::L2::HashFunction hashFunc(5, 5, 100, 2.0f);
+    Euclidean::L2::HashFunction hashFunc(10, 10, 100, 2.0f);
 
     Euclidean::L2::DistanceFunction distFunc;
 
-    lsh::HashSet<Euclidean::DataPoint> hashSet(hashFunc, distFunc, 10, data);
+    lsh::HashSet<Euclidean::DataPoint> hashSet(hashFunc, distFunc, 4, data);
 
     hashSet.add(data);
 
-    hashSet.forEachPointInRange(100000.0f, data[0], [] (unsigned int x)
+    Array<int> found;
+
+
+    std::clock_t begin = std::clock();
+
+    auto sum = hashSet.forEachPointInRange(1300.0f, data[2], [&] (unsigned int x)
     {
         std::cout << x << std::endl;
+        found.emplaceBack(x);
     });
 
-    return 0;
+    std::clock_t end = std::clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    std::cout << "time: " << elapsed_secs << " sum: " << sum << std::endl;
+
+    std::clock_t begin2 = std::clock();
 
     for (unsigned int i = 0; i < data.getPointNum(); ++i)
     {
-        if (distFunc(data[i], data[0]) < 100000.0f)
+        auto x = distFunc(data[i], data[2]);
+        if (x < 1300.0f)
         {
-            std::cout << i << std::endl;
+            std::cout << i << " : " << x << "\t" << ((found.contains(i)) ? "[OK]" : "[FAIL]") << std::endl;
         }
     }
+
+    std::clock_t end2 = std::clock();
+    double elapsed_secs2 = double(end2 - begin2) / CLOCKS_PER_SEC;
+
+    std::cout << "time: " << elapsed_secs2 << std::endl;
 
     return 0;
 }

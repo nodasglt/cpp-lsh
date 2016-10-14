@@ -54,12 +54,6 @@ namespace lsh
             {
                 add(i, data[i]);
             }
-
-            unsigned int i = 0;
-            for (auto& x : mHashMapArray[0][32])
-            {
-                std::cout << i++ << " " << x.key << " " << x.target << std::endl;
-            }
         }
 
         unsigned int forEachPointInRange (double R, const PointRef p, std::function<void (unsigned int)> func)
@@ -75,13 +69,13 @@ namespace lsh
                 {
                     if (key == x.key && !checked.contains(x.target))
                     {
-                        std::cout << "/* message */" << std::endl;
+                        ++sum;
                         if (mDistFunc(mDataSet[x.target], p) < R)
                         {
                             func(x.target);
-                            checked.emplaceBack(x.target);
-                            sum++;
+                            //sum++;
                         }
+                        checked.emplaceBack(x.target);
                     }
                 }
             }

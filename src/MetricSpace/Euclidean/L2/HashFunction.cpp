@@ -1,5 +1,8 @@
 #include "HashFunction.hpp"
 
+#include <random>
+#include <chrono>
+
 namespace MetricSpace {
 namespace Euclidean
 {
@@ -7,6 +10,10 @@ namespace Euclidean
     {
         HashFunction::HashFunction (unsigned int l, unsigned int m, unsigned int d, double w) : lsh::HashFunction<DataPoint>(l), lines(l, m), constants(l, m), window(w)
         {
+            std::default_random_engine generator(8453438388); //std::chrono::system_clock::now().time_since_epoch().count()
+            std::uniform_real_distribution<double> udist(0.0f, w);
+            std::normal_distribution<double> ndist(0.0f, 1.0f);
+
             for (unsigned int i = 0; i < lines.getColSize(); ++i)
             {
                 for (unsigned int j = 0; j < lines.getRowSize(); ++j)
@@ -15,7 +22,7 @@ namespace Euclidean
                     vec.reserve(d);
                     for (unsigned int k = 0; k < d; ++k)
                     {
-                        vec.emplaceBack(((double)std::rand())/RAND_MAX); /* TODO: Use Normal Dist */
+                        vec.emplaceBack(ndist(generator)); /* TODO: Use Normal Dist */
                     }
                 }
             }
@@ -24,7 +31,7 @@ namespace Euclidean
             {
                 for (double& c : constants.row(i))
                 {
-                    c = ((double)std::rand())/RAND_MAX * w;
+                    c = udist(generator);
                 }
             }
         }
@@ -41,12 +48,12 @@ namespace Euclidean
 
         uint64_t HashFunction::getKeyAtIndex (const PointRef p, unsigned int i) const
         {
-            uint64_t sum = 0;
+            double sum = 0.0f;
             for (unsigned int j = 0; j < lines.getRowSize(); ++j)
             {
-                sum += (dot(p, const_cast<Array<double>&>(lines(i, j))) + constants(i, j) / window);
+                sum += ((dot(p, const_cast<Array<double>&>(lines(i, j))) + constants(i, j)) / window);
             }
-            return sum;
+            return (uint64_t)(((sum > 0) ? sum : -sum));
         }
     }
 }}
