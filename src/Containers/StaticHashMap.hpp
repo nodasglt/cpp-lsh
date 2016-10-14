@@ -43,6 +43,8 @@ class StaticHashMap
 
 	explicit StaticHashMap (const unsigned int size) : mTable(size) {}
 
+    StaticHashMap (StaticHashMap&& other) : mTable(std::move(other.mTable)) {}
+
 	~StaticHashMap () {}
 
     bool exists (const unsigned int key) const

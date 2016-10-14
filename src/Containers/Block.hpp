@@ -1,6 +1,7 @@
 #ifndef __BLOCK_HPP__
 #define __BLOCK_HPP__
 
+#include <iostream>
 #include <iomanip>
 
 template<typename BufferType, typename T>

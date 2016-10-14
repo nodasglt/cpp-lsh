@@ -10,13 +10,17 @@
 
 namespace lsh
 {
-    template<typename PointType, typename PointTypeRef = PointType&>;
+    template<typename PointType>
     class HashSet
     {
+    public:
+        using Point = typename PointType::Type;
+        using PointRef = typename PointType::RefType;
+
     private:
         const HashFunction<PointType>& mHashFunc;
         const DistanceFunction<PointType>& mDistFunc;
-        Array<HashMap</*uint64_t, */PointType>> mHashMapArray;
+        Array<StaticHashMap</*uint64_t, */Point>> mHashMapArray;
         /* TODO: Store DataPoints to a list */
 
     public:
@@ -30,7 +34,7 @@ namespace lsh
             }
         }
 
-        void add (const PointTypeRef x) /* NOTE: can be removed */
+        void add (const PointRef x) /* NOTE: can be removed */
         {
             auto keySet = mHashFunc(x);
 
@@ -40,10 +44,10 @@ namespace lsh
             }
         }
 
-        unsigned int forEachNNinRange (unsigned int r, std::function<void (const PointTypeRef)> func);
+        unsigned int forEachNNinRange (unsigned int r, std::function<void (const PointRef)> func);
 
-        unsigned int operator[] (const PointTypeRef p);
-    }
+        unsigned int operator[] (const PointRef p);
+    };
 }
 
 #endif /* end of include guard: __LSH_HASHSET_HPP__ */

@@ -1,15 +1,19 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "VectorSet.hpp"
+#include "MetricSpace/Euclidean/DataSet.hpp"
 #include "Containers/Array.hpp"
-#include "EuclideanDistance.hpp"
-#include "EuclideanHash.hpp"
+#include "MetricSpace/Euclidean/L2/Metric.hpp"
+#include "MetricSpace/Euclidean/Euclidean.hpp"
+#include "LocalitySensitiveHashing/HashSet.hpp"
 
 int main(int argc, char const* argv[])
 {
-    L2::HashFunction(5,5,5,5);
-    L2::DistanceFunction();
+    using namespace MetricSpace;
+    
+    Euclidean::DataSet data = Euclidean::DataSetParser().parse(argv[1]);
+
+    lsh::HashSet<Euclidean::DataPoint> hashSet(Euclidean::L2::HashFunction(5, 5, 5, 2.0f), Euclidean::L2::DistanceFunction(), 4);
 
     return 0;
 }

@@ -4,7 +4,7 @@ LDFLAGS =
 
 TARGET = run
 
-OBJECTS = $(patsubst %.cpp, %.o, $(wildcard src/*.cpp))
+OBJECTS = $(patsubst %.cpp, %.o, $(shell find ./src/ -type f -name '*.cpp'))
 
 all: $(TARGET)
 

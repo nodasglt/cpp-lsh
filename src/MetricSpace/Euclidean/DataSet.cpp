@@ -1,37 +1,39 @@
-#include "VectorSet.hpp"
+#include "DataSet.hpp"
 
-VectorSet::VectorSet(Matrix<double>&& m) : mVectors(std::move(m)) {}
+using namespace MetricSpace::Euclidean;
 
-VectorSet::VectorSet(VectorSet&& other) : mVectors(std::move(other.mVectors)) {}
+DataSet::DataSet(Matrix<double>&& m) : mVectors(std::move(m)) {}
 
-VectorSet::VectorSet(const VectorSet& other) : mVectors(other.mVectors) {}
+DataSet::DataSet(DataSet&& other) : mVectors(std::move(other.mVectors)) {}
 
-VectorSet& VectorSet::operator= (VectorSet other)
+DataSet::DataSet(const DataSet& other) : mVectors(other.mVectors) {}
+
+DataSet& DataSet::operator= (DataSet other)
 {
     std::swap(mVectors, other.mVectors);
 
     return *this;
 }
 
-Block<double*, double> VectorSet::operator[] (unsigned int i) const
+Block<double*, double> DataSet::operator[] (unsigned int i) const
 {
     return mVectors.row(i);
 }
 
-unsigned int VectorSet::getPointNum() const
+unsigned int DataSet::getPointNum() const
 {
     return mVectors.getColSize();
 }
 
-unsigned int VectorSet::getVectorDim() const
+unsigned int DataSet::getVectorDim() const
 {
     return mVectors.getRowSize();
 }
 
 
-VectorSetParser::VectorSetParser () : mMetric(Metric::undefined) {}
+DataSetParser::DataSetParser () : mMetric(Metric::undefined) {}
 
-VectorSet VectorSetParser::parse (const std::string& fileName)
+DataSet DataSetParser::parse (const std::string& fileName)
 {
    std::ifstream file(fileName);
 
@@ -67,13 +69,13 @@ VectorSet VectorSetParser::parse (const std::string& fileName)
    return {std::move(vecs)};
 }
 
-Metric VectorSetParser::getMetric () const
+Metric DataSetParser::getMetric () const
 {
    return mMetric;
 }
 
 
-unsigned int VectorSetParser::getVectorNum(const std::string& fileName) const
+unsigned int DataSetParser::getVectorNum(const std::string& fileName) const
 {
    std::ifstream file(fileName);
 
@@ -82,7 +84,7 @@ unsigned int VectorSetParser::getVectorNum(const std::string& fileName) const
    return std::count(std::istream_iterator<char>(file), std::istream_iterator<char>(), '\n') - 2;
 }
 
-unsigned int VectorSetParser::getVectorDim(const std::string& fileName) const
+unsigned int DataSetParser::getVectorDim(const std::string& fileName) const
 {
    std::ifstream file(fileName);
 

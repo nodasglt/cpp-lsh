@@ -3,13 +3,13 @@
 
 namespace lsh
 {
-    template<typename PointType, typename PointTypeRef = PointType&>
+    template<typename PointType>
     struct DistanceFunction
     {
-        using Point = PointType;
-        using PointRef = PointTypeRef;
-        
-        virtual double operator() (const PointTypeRef x, const PointTypeRef y) const = 0;
+        using Point = typename PointType::Type;
+        using PointRef = typename PointType::RefType;
+
+        virtual double operator() (const PointRef x, const PointRef y) const = 0;
     };
 }
 

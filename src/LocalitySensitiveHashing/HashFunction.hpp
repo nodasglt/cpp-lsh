@@ -3,18 +3,18 @@
 
 namespace lsh
 {
-    template<typename PointType, typename PointTypeRef = PointType&>
+    template<typename PointType>
     struct HashFunction
     {
-        using Point = PointType;
-        using PointRef = PointTypeRef;
+        using Point = typename PointType::Type;
+        using PointRef = typename PointType::RefType;
 
         struct KeyGenerator
         {
             const HashFunction& mHashData;
-            const PointTypeRef mPoint;
+            const PointRef mPoint;
 
-            KeyGenerator (const HashFunction& hashData, const PointTypeRef dataPoint) : mHashData(hashData), mPoint(dataPoint) {}
+            KeyGenerator (const HashFunction& hashData, const PointRef dataPoint) : mHashData(hashData), mPoint(dataPoint) {}
 
             uint64_t operator[] (unsigned int i) const
             {
@@ -29,12 +29,12 @@ namespace lsh
             return mKeyNum;
         }
 
-        const KeyGenerator operator() (const PointTypeRef p) const
+        const KeyGenerator operator() (const PointRef p) const
         {
             return KeyGenerator(*this, p);
         }
 
-        virtual uint64_t getKeyAtIndex (const PointTypeRef p, unsigned int i) const = 0;
+        virtual uint64_t getKeyAtIndex (const PointRef p, unsigned int i) const = 0;
 
      private:
         const unsigned int mKeyNum;
