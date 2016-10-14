@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include "Array.hpp"
 
 template<typename BufferType, typename T>
 class Block
@@ -14,6 +15,8 @@ class Block
 
  public:
      Block (BufferType buffer, unsigned int size, unsigned int offset) : mOffset(offset), mSize(size), mArray(buffer) {}
+
+     Block (Array<T>& array) : mOffset(1), mSize(array.getLength()), mArray((array.getLength()) ? &array[0] : nullptr) {}
 
      Block (const Block&) = default;
 

@@ -1,6 +1,7 @@
 #ifndef __GENERIC_DATASET_HPP__
 #define __GENERIC_DATASET_HPP__
 
+namespace MetricSpace {
 namespace Generic
 {
     template<typename PointType>
@@ -14,6 +15,6 @@ namespace Generic
 
         virtual unsigned int getPointNum () const = 0;
     };
-}
+}}
 
 #endif /* end of include guard: __GENERIC_DATASET_HPP__ */

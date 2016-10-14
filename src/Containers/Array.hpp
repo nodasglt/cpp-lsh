@@ -5,7 +5,6 @@
 #include <functional>
 #include <utility>
 #include <array>
-#include "Block.hpp"
 
 template <typename T>
 class Array
@@ -237,11 +236,6 @@ class Array
 
     template <typename U>
     friend std::ostream& operator<< (std::ostream &os, const Array<U>& arr);
-
-    operator Block<T*, T> ()
-    {
-        return {mData, mLength, 1};
-    }
 };
 
 template <typename T>

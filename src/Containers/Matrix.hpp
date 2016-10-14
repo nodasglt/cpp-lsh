@@ -96,7 +96,7 @@ class Matrix
          return mArray[i * mRowSize + j];
      }
 
-     T operator() (unsigned int i, unsigned int j) const
+     const T& operator() (unsigned int i, unsigned int j) const
      {
          return mArray[i * mRowSize + j];
      }

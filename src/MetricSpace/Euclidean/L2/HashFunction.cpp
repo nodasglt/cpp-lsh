@@ -11,7 +11,7 @@ namespace Euclidean
             {
                 for (unsigned int j = 0; j < lines.getRowSize(); ++j)
                 {
-                    Array<double> vec = lines(i, j);
+                    Array<double>& vec = lines(i, j);
                     vec.reserve(d);
                     for (unsigned int k = 0; k < d; ++k)
                     {
@@ -44,7 +44,7 @@ namespace Euclidean
             uint64_t sum = 0;
             for (unsigned int j = 0; j < lines.getRowSize(); ++j)
             {
-                sum += (dot(p, lines(i, j)) + constants(i, j));
+                sum += (dot(p, const_cast<Array<double>&>(lines(i, j))) + constants(i, j) / window);
             }
             return sum;
         }

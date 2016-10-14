@@ -58,38 +58,21 @@ class StaticHashMap
 
     void add (const unsigned int key, const T& target)
     {
-        if (exists(key)) throw std::invalid_argument( "Key already exists." );
+        //if (exists(key)) throw std::invalid_argument( "Key already exists." );
 
         mTable[key % mTable.getLength()].pushBack(Pair(key, target));
     }
 
     void add (const unsigned int key, T&& target)
     {
-        if (exists(key)) throw std::invalid_argument( "Key already exists." );
+        //if (exists(key)) throw std::invalid_argument( "Key already exists." );
 
         mTable[key % mTable.getLength()].pushBack(Pair(key, std::move(target)));
     }
 
-    void remove (const unsigned int key)
+    const Array<Pair>& operator[] (const unsigned int key) const
     {
-        auto& bucket = mTable[key % mTable.getLength()];
-
-        for (const Pair& x : bucket)
-        {
-            if (x.key == key) return bucket.remove(&x);
-        }
-
-        throw std::invalid_argument( "Item not in HashTable." );
-    }
-
-    T& operator[] (const unsigned int key)
-    {
-        for (Pair& x : mTable[key % mTable.getLength()])
-        {
-            if (x.key == key) return x.target;
-        }
-
-        throw std::invalid_argument( "Item not in HashTable." );
+        return mTable[key % mTable.getLength()];
     }
 
     void for_each (const std::function<void (const Pair&)> func) const

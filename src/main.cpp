@@ -10,10 +10,31 @@
 int main(int argc, char const* argv[])
 {
     using namespace MetricSpace;
-    
+
     Euclidean::DataSet data = Euclidean::DataSetParser().parse(argv[1]);
 
-    lsh::HashSet<Euclidean::DataPoint> hashSet(Euclidean::L2::HashFunction(5, 5, 5, 2.0f), Euclidean::L2::DistanceFunction(), 4);
+    Euclidean::L2::HashFunction hashFunc(5, 5, 100, 2.0f);
+
+    Euclidean::L2::DistanceFunction distFunc;
+
+    lsh::HashSet<Euclidean::DataPoint> hashSet(hashFunc, distFunc, 10, data);
+
+    hashSet.add(data);
+
+    hashSet.forEachPointInRange(100000.0f, data[0], [] (unsigned int x)
+    {
+        std::cout << x << std::endl;
+    });
+
+    return 0;
+
+    for (unsigned int i = 0; i < data.getPointNum(); ++i)
+    {
+        if (distFunc(data[i], data[0]) < 100000.0f)
+        {
+            std::cout << i << std::endl;
+        }
+    }
 
     return 0;
 }
