@@ -4,10 +4,10 @@
 #include <functional>
 #include <limits>
 
-#include "HashFunction.hpp"
-#include "DistanceFunction.hpp"
 #include "../Containers/Array.hpp"
 #include "../Containers/StaticHashMap.hpp"
+#include "../MetricSpace/Generic/HashFunction.hpp"
+#include "../MetricSpace/Generic/DistanceFunction.hpp"
 #include "../MetricSpace/Generic/DataSet.hpp"
 
 namespace lsh
@@ -19,15 +19,18 @@ namespace lsh
         using Point = typename PointType::Type;
         using PointRef = typename PointType::RefType;
 
+        using DataSet = MetricSpace::Generic::DataSet<PointType>;
+        using HashFunction = MetricSpace::Generic::HashFunction<PointType>;
+        using DistanceFunction = MetricSpace::Generic::DistanceFunction<PointType>;
+
     private:
-        const HashFunction<PointType>& mHashFunc;
-        const DistanceFunction<PointType>& mDistFunc;
-        Array<StaticHashMap<unsigned int>> mHashMapArray;
-        const MetricSpace::Generic::DataSet<PointType>& mDataSet;
-        /* TODO: Store DataPoints to a list */
+        const HashFunction& mHashFunc;
+        const DistanceFunction& mDistFunc;
+        Array<StaticHashMap<unsigned int>> mHashMapArray; /* TODO: Upgrade to a more cache friendly data structure */
+        const DataSet& mDataSet;
 
     public:
-        HashSet (const HashFunction<PointType>& hashFunc, const DistanceFunction<PointType>& distFunc, unsigned int hashMapSize, const MetricSpace::Generic::DataSet<PointType>& dataSet)
+        HashSet (const HashFunction& hashFunc, const DistanceFunction& distFunc, unsigned int hashMapSize, const DataSet& dataSet)
             : mHashFunc(hashFunc), mDistFunc(distFunc), mHashMapArray(), mDataSet(dataSet)
         {
             mHashMapArray.reserve(mHashFunc.getKeyNum());
@@ -48,7 +51,7 @@ namespace lsh
             }
         }
 
-        void add (const MetricSpace::Generic::DataSet<PointType>& data)
+        void add (const DataSet& data)
         {
             for (unsigned int i = 0; i < data.getPointNum(); ++i)
             {

@@ -12,20 +12,19 @@
 
 int main(int argc, char const* argv[])
 {
-    using namespace MetricSpace;
+    using namespace MetricSpace::Euclidean;
 
-    auto dataSet = Euclidean::DataSetParser().parse(argv[1]);
+    auto dataSet = DataSetParser().parse(argv[1]);
 
-    Euclidean::L2::HashFunction hashFunc(10, 10, 100, 2.0f);
+    L2::HashFunction hashFunc(10, 10, 100, 2.0f);
 
-    Euclidean::L2::DistanceFunction distFunc;
+    L2::DistanceFunction distFunc;
 
-    lsh::HashSet<Euclidean::DataPoint> hashSet(hashFunc, distFunc, 4, dataSet);
+    lsh::HashSet<DataPoint> hashSet(hashFunc, distFunc, 4, dataSet);
 
     hashSet.add(dataSet);
 
     Array<int> found;
-
 
     std::clock_t begin = std::clock();
 
@@ -55,6 +54,8 @@ int main(int argc, char const* argv[])
     double elapsed_secs2 = double(end2 - begin2) / CLOCKS_PER_SEC;
 
     std::cout << "time: " << elapsed_secs2 << std::endl;
+
+    //std::cout << 4294967291 << std::endl;
 
     return 0;
 }

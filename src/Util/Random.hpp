@@ -59,6 +59,11 @@ namespace Util
             return (nextDouble() * (max - min)) + min;
         }
     };
+
+    class GaussianRandom
+    {
+
+    };
 }
 
 #endif /* end of include guard: __UTIL_RANDOM_HPP__ */

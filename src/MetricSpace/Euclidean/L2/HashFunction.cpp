@@ -8,7 +8,7 @@ namespace Euclidean
 {
     namespace L2
     {
-        HashFunction::HashFunction (unsigned int l, unsigned int m, unsigned int d, double w) : lsh::HashFunction<DataPoint>(l), lines(l, m), constants(l, m), window(w)
+        HashFunction::HashFunction (unsigned int l, unsigned int m, unsigned int d, double w) : Generic::HashFunction<DataPoint>(l), lines(l, m), constants(l, m), window(w)
         {
             std::default_random_engine generator(8453438388); //std::chrono::system_clock::now().time_since_epoch().count()
             std::uniform_real_distribution<double> udist(0.0f, w);
@@ -46,14 +46,14 @@ namespace Euclidean
             return sum;
         }
 
-        uint64_t HashFunction::getKeyAtIndex (const PointRef p, unsigned int i) const
+        uint32_t HashFunction::getKeyAtIndex (const PointRef p, unsigned int i) const
         {
             double sum = 0.0f;
             for (unsigned int j = 0; j < lines.getRowSize(); ++j)
             {
                 sum += ((dot(p, const_cast<Array<double>&>(lines(i, j))) + constants(i, j)) / window);
             }
-            return (uint64_t)(((sum > 0) ? sum : -sum));
+            return (uint32_t)(((sum > 0) ? sum : -sum)) % 4294967291;
         }
     }
 }}

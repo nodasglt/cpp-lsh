@@ -1,7 +1,8 @@
 #ifndef __LSH_HASHFUNCTION_HPP__
 #define __LSH_HASHFUNCTION_HPP__
 
-namespace lsh
+namespace MetricSpace {
+namespace Generic
 {
     template<typename PointType>
     struct HashFunction
@@ -16,7 +17,7 @@ namespace lsh
 
             KeyGenerator (const HashFunction& hashData, const PointRef dataPoint) : mHashData(hashData), mPoint(dataPoint) {}
 
-            uint64_t operator[] (unsigned int i) const
+            uint32_t operator[] (unsigned int i) const
             {
                 return mHashData.getKeyAtIndex(mPoint, i);
             }
@@ -34,11 +35,11 @@ namespace lsh
             return KeyGenerator(*this, p);
         }
 
-        virtual uint64_t getKeyAtIndex (const PointRef p, unsigned int i) const = 0;
+        virtual uint32_t getKeyAtIndex (const PointRef p, unsigned int i) const = 0;
 
      private:
         const unsigned int mKeyNum;
     };
-}
+}}
 
 #endif /* end of include guard: __LSH_HASHFUNCTION_HPP__ */
