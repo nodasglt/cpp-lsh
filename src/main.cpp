@@ -12,34 +12,24 @@
 
 int main(int argc, char const* argv[])
 {
-    std::default_random_engine gen(std::atoi(argv[1]));
-    Util::Random random(gen);
-
-    for (int i = 0; i < 100; ++i)
-    {
-        std::cout << random.nextDouble(-10, 10) << std::endl;
-    }
-
-    return 0;
-
     using namespace MetricSpace;
 
-    Euclidean::DataSet data = Euclidean::DataSetParser().parse(argv[1]);
+    auto dataSet = Euclidean::DataSetParser().parse(argv[1]);
 
     Euclidean::L2::HashFunction hashFunc(10, 10, 100, 2.0f);
 
     Euclidean::L2::DistanceFunction distFunc;
 
-    lsh::HashSet<Euclidean::DataPoint> hashSet(hashFunc, distFunc, 4, data);
+    lsh::HashSet<Euclidean::DataPoint> hashSet(hashFunc, distFunc, 4, dataSet);
 
-    hashSet.add(data);
+    hashSet.add(dataSet);
 
     Array<int> found;
 
 
     std::clock_t begin = std::clock();
 
-    auto sum = hashSet.forEachPointInRange(1300.0f, data[2], [&] (unsigned int x)
+    auto sum = hashSet.forEachPointInRange(1300.0f, dataSet[2], [&] (unsigned int x)
     {
         std::cout << x << std::endl;
         found.emplaceBack(x);
@@ -52,9 +42,9 @@ int main(int argc, char const* argv[])
 
     std::clock_t begin2 = std::clock();
 
-    for (unsigned int i = 0; i < data.getPointNum(); ++i)
+    for (unsigned int i = 0; i < dataSet.getPointNum(); ++i)
     {
-        auto x = distFunc(data[i], data[2]);
+        auto x = distFunc(dataSet[i], dataSet[2]);
         if (x < 1300.0f)
         {
             std::cout << i << " : " << x << "\t" << ((found.contains(i)) ? "[OK]" : "[FAIL]") << std::endl;

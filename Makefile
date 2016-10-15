@@ -9,10 +9,10 @@ OBJECTS = $(patsubst %.cpp, %.o, $(shell find ./src/ -type f -name '*.cpp'))
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CC) -pg -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.cpp
-	$(CC) -pg -c $(CFLAGS) $^ -o $@
+	$(CC) -c $(CFLAGS) $^ -o $@
 
 clean:
 	rm $(TARGET) $(OBJECTS)

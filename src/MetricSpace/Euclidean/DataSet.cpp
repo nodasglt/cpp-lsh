@@ -57,11 +57,11 @@ DataSet DataSetParser::parse (const std::string& fileName)
    {
        std::string id;
        file >> id;
+
        //std::cout << id << std::endl;
-       std::istream_iterator<double> curValue(file);
-       for (unsigned int j = 0; ; ++j, ++curValue)
+       for (unsigned int j = 0; ; ++j)
        {
-           vecs(i, j) = *curValue;
+           file >> vecs(i, j);
            if (j == vecs.getRowSize() - 1) break;
        }
    }
