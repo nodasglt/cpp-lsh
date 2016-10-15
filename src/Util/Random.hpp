@@ -1,23 +1,15 @@
 #ifndef __UTIL_RANDOM_HPP__
 #define __UTIL_RANDOM_HPP__
 
-#include <random>
+#include <cstdlib>
 
 namespace Util
 {
-    using Generator = std::default_random_engine;
-
-    class Random
+    struct Random
     {
-     private:
-        Generator& mGenerator;
-
-     public:
-        Random (Generator& gen) : mGenerator(gen) {}
-
         uint64_t nextInt ()
         {
-            return mGenerator();
+            return std::rand();
         }
 
         /*
@@ -26,7 +18,7 @@ namespace Util
         uint64_t nextInt (uint64_t max)
         {
             uint64_t num_bins = max + 1;
-            uint64_t num_rand = mGenerator.max() + 1;
+            uint64_t num_rand = (uint64_t)RAND_MAX + 1;
             uint64_t bin_size = num_rand / num_bins;
             uint64_t defect   = num_rand % num_bins;
 
@@ -51,7 +43,7 @@ namespace Util
 
         double nextDouble ()
         {
-            return (double)nextInt() / mGenerator.max();
+            return (double)nextInt() / RAND_MAX;
         }
 
         double nextDouble (double min, double max)
