@@ -24,9 +24,18 @@ namespace Util
         double nextDouble (double min, double max) const;
     };
 
-    class GaussianRandom
+    struct GaussianRandom
     {
+        GaussianRandom();
+        
+        double nextDouble ();
 
+        double nextDouble (double mean, double stddev);
+
+    private:
+        bool mIsStored;
+        double mX, mY;
+        Random mRandom;
     };
 }
 
