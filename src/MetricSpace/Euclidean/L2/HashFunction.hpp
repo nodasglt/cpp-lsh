@@ -20,6 +20,7 @@ namespace Euclidean
          private:
             Matrix<Array<double>> lines;
             Matrix<double> constants;
+            Matrix<int32_t> rConstants;
             const double window;
         };
     }

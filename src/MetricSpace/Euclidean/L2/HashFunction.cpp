@@ -1,18 +1,20 @@
-#include "HashFunction.hpp"
-
-#include <random>
 #include <chrono>
+#include <random>
+
+#include "HashFunction.hpp"
+#include "../../../Util/Random.hpp"
+
 
 namespace MetricSpace {
 namespace Euclidean
 {
     namespace L2
     {
-        HashFunction::HashFunction (unsigned int l, unsigned int m, unsigned int d, double w) : Generic::HashFunction<DataPoint>(l), lines(l, m), constants(l, m), window(w)
+        HashFunction::HashFunction (unsigned int l, unsigned int m, unsigned int d, double w)
+        : Generic::HashFunction<DataPoint>(l), lines(l, m), constants(l, m), rConstants(l, m), window(w)
         {
-            std::default_random_engine generator(8453438388); //std::chrono::system_clock::now().time_since_epoch().count()
-            std::uniform_real_distribution<double> udist(0.0f, w);
-            std::normal_distribution<double> ndist(0.0f, 1.0f);
+            Util::Random uniformRandom;
+            Util::GaussianRandom normalRandom;
 
             for (unsigned int i = 0; i < lines.getColSize(); ++i)
             {
@@ -22,7 +24,7 @@ namespace Euclidean
                     vec.reserve(d);
                     for (unsigned int k = 0; k < d; ++k)
                     {
-                        vec.emplaceBack(ndist(generator)); /* TODO: Use Normal Dist */
+                        vec.emplaceBack(normalRandom.nextDouble());
                     }
                 }
             }
@@ -31,7 +33,15 @@ namespace Euclidean
             {
                 for (double& c : constants.row(i))
                 {
-                    c = udist(generator);
+                    c = uniformRandom.nextDouble(0.0f, w);
+                }
+            }
+
+            for (unsigned int i = 0; i < rConstants.getColSize(); ++i)
+            {
+                for (int32_t& c : rConstants.row(i))
+                {
+                    c = uniformRandom.nextInt();
                 }
             }
         }
@@ -46,14 +56,19 @@ namespace Euclidean
             return sum;
         }
 
+        inline const Block<double*, double> arrayToDataPoint (const Array<double>& array)
+        {
+            return {((array.getLength()) ? &(const_cast<double&>(array[0])) : nullptr), array.getLength(), 1};
+        }
+
         uint32_t HashFunction::getKeyAtIndex (const PointRef p, unsigned int i) const
         {
-            double sum = 0.0f;
+            int64_t sumInt = 0;
             for (unsigned int j = 0; j < lines.getRowSize(); ++j)
             {
-                sum += ((dot(p, const_cast<Array<double>&>(lines(i, j))) + constants(i, j)) / window);
+                sumInt += rConstants(i, j) * (int64_t)floor((dot(p, arrayToDataPoint(lines(i, j))) + constants(i, j)) / window);
             }
-            return (uint32_t)(((sum > 0) ? sum : -sum)) % 4294967291;
+            return abs(sumInt) % 4294967291;
         }
     }
 }}
