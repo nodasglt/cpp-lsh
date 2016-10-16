@@ -59,26 +59,28 @@ namespace lsh
             }
         }
 
-        unsigned int forEachPointInRange (double R, const PointRef p, std::function<void (unsigned int)> func)
+        unsigned int forEachPointInRange (double R, const PointRef p, std::function<void (unsigned int, double)> func)
         {
             auto keySet = mHashFunc(p);
             unsigned int sum = 0;
-            Array<unsigned int> checked;
+            bool checked[mDataSet.getPointNum()] = { false };
 
             for (unsigned int i = 0; i < mHashMapArray.getLength(); ++i)
             {
                 auto key = keySet[i];
                 for (auto& x : mHashMapArray[i][key])
                 {
-                    if (key == x.key && !checked.contains(x.target))
+                    //std::cout << x.target << std::endl;
+                    if (!checked[x.target])
                     {
                         ++sum;
-                        if (mDistFunc(mDataSet[x.target], p) < R)
+                        double dist = mDistFunc(mDataSet[x.target], p);
+                        if (dist < R)
                         {
-                            func(x.target);
+                            func(x.target, dist);
                             //sum++;
                         }
-                        checked.emplaceBack(x.target);
+                        checked[x.target] = true;
                     }
                 }
             }
