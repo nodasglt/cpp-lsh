@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -std=c++11 -Os
+CFLAGS = -Wall -std=c++11 -Os -pedantic-errors
 LDFLAGS =
 INCLUDE = -I ./src/
 
