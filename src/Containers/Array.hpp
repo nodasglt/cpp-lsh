@@ -6,6 +6,8 @@
 #include <utility>
 #include <array>
 
+#include "Block.hpp"
+
 template <typename T>
 class Array
 {
@@ -229,9 +231,19 @@ class Array
         return mLength;
     }
 
-    sizeType getCapacity() const
+    sizeType getCapacity () const
     {
         return mCapacity;
+    }
+
+    operator Block<T*, T> ()
+    {
+        return { mData, mLength, 1 };
+    }
+
+    operator const Block<T*, T> () const
+    {
+        return { mData, mLength, 1 };
     }
 
     template <typename U>

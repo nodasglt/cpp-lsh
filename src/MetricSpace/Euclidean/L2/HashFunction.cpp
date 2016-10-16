@@ -56,17 +56,12 @@ namespace Euclidean
             return sum;
         }
 
-        inline const Block<double*, double> arrayToDataPoint (const Array<double>& array)
-        {
-            return {((array.getLength()) ? &(const_cast<double&>(array[0])) : nullptr), array.getLength(), 1};
-        }
-
         uint32_t HashFunction::getKeyAtIndex (const PointRef p, unsigned int i) const
         {
             int64_t sumInt = 0;
             for (unsigned int j = 0; j < lines.getRowSize(); ++j)
             {
-                sumInt += rConstants(i, j) * (int64_t)floor((dot(p, arrayToDataPoint(lines(i, j))) + constants(i, j)) / window);
+                sumInt += rConstants(i, j) * (int64_t)floor( ( dot(p, lines(i, j)) + constants(i, j) ) / window );
             }
             return abs(sumInt) % 4294967291;
         }
