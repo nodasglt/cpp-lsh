@@ -71,7 +71,7 @@ namespace lsh
                 for (auto& x : mHashMapArray[i][key])
                 {
                     //std::cout << x.target << std::endl;
-                    if (!checked[x.target])
+                    if (x.key == key && !checked[x.target])
                     {
                         ++sum;
                         double dist = mDistFunc(mDataSet[x.target], p);
