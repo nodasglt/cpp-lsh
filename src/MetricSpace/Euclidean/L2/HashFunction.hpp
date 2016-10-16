@@ -1,8 +1,8 @@
 #ifndef __METRICSPACE_EUCLIDEAN_L2_HASHFUNCTION_HPP__
 #define __METRICSPACE_EUCLIDEAN_L2_HASHFUNCTION_HPP__
 
-#include "../../../Containers/Array.hpp"
-#include "../../../Containers/Matrix.hpp"
+#include "Containers/Array.hpp"
+#include "Containers/Matrix.hpp"
 #include "../../Generic/HashFunction.hpp"
 #include "../Euclidean.hpp"
 

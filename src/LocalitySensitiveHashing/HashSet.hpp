@@ -2,13 +2,10 @@
 #define __LSH_HASHSET_HPP__
 
 #include <functional>
-#include <limits>
 
-#include "../Containers/Array.hpp"
-#include "../Containers/StaticHashMap.hpp"
-#include "../MetricSpace/Generic/HashFunction.hpp"
-#include "../MetricSpace/Generic/DistanceFunction.hpp"
-#include "../MetricSpace/Generic/DataSet.hpp"
+#include "Containers/Array.hpp"
+#include "Containers/StaticHashMap.hpp"
+#include "MetricSpace/Generic/Metric.hpp"
 
 namespace lsh
 {
@@ -46,23 +43,15 @@ namespace lsh
             {
                 mHashMapArray.emplaceBack(hashMapSize);
             }
-        }
 
-        void add (unsigned int value, const PointRef x) /* NOTE: can be removed */
-        {
-            auto keySet = mHashFunc(x);
-
-            for (unsigned int i = 0; i < mHashMapArray.getLength(); ++i)
+            for (unsigned int i = 0; i < mDataSet.getPointNum(); ++i)
             {
-                mHashMapArray[i].add(keySet[i], value);
-            }
-        }
+                auto keySet = mHashFunc(mDataSet[i]);
 
-        void add (const DataSet& data)
-        {
-            for (unsigned int i = 0; i < data.getPointNum(); ++i)
-            {
-                add(i, data[i]);
+                for (unsigned int j = 0; j < mHashMapArray.getLength(); ++j)
+                {
+                    mHashMapArray[j].add(keySet[j], i);
+                }
             }
         }
 
@@ -112,7 +101,7 @@ namespace lsh
                     {
                         sum++;
                         double dist = mDistFunc(mDataSet[x.target], p);
-                        if (dist < sDist || !found)
+                        if ((dist < sDist || !found) && dist > 0/* NOTE: ignore existing values for testing -- remove when testSet is available */)
                         {
                             found = true;
                             sDist = dist;
@@ -127,5 +116,27 @@ namespace lsh
         }
     };
 }
+
+/*
+
+void add (unsigned int value, const PointRef x)
+{
+    auto keySet = mHashFunc(x);
+
+    for (unsigned int i = 0; i < mHashMapArray.getLength(); ++i)
+    {
+        mHashMapArray[i].add(keySet[i], value);
+    }
+}
+
+void add (const DataSet& data)
+{
+    for (unsigned int i = 0; i < data.getPointNum(); ++i)
+    {
+        add(i, data[i]);
+    }
+}
+
+*/
 
 #endif /* end of include guard: __LSH_HASHSET_HPP__ */

@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <string>
 
-#include "../../Containers/Matrix.hpp"
+#include "Containers/Matrix.hpp"
 #include "../Generic/DataSet.hpp"
 #include "Euclidean.hpp"
 

@@ -2,7 +2,7 @@
 #include <random>
 
 #include "HashFunction.hpp"
-#include "../../../Util/Random.hpp"
+#include "Util/Random.hpp"
 
 
 namespace MetricSpace {

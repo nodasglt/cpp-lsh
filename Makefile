@@ -1,6 +1,7 @@
 CC = g++
 CFLAGS = -Wall -std=c++11 -Os
 LDFLAGS =
+INCLUDE = -I ./src/
 
 TARGET = run
 
@@ -12,7 +13,7 @@ $(TARGET): $(OBJECTS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.cpp
-	$(CC) -c $(CFLAGS) $^ -o $@
+	$(CC) $(INCLUDE) -c $(CFLAGS) $^ -o $@
 
 clean:
 	rm $(TARGET) $(OBJECTS)

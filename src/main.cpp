@@ -3,10 +3,7 @@
 #include <ctime>
 #include <random>
 
-#include "MetricSpace/Euclidean/DataSet.hpp"
-#include "Containers/Array.hpp"
 #include "MetricSpace/Euclidean/L2/Metric.hpp"
-#include "MetricSpace/Euclidean/Euclidean.hpp"
 #include "LocalitySensitiveHashing/HashSet.hpp"
 
 int main(int argc, char const* argv[])
@@ -17,49 +14,41 @@ int main(int argc, char const* argv[])
 
     auto dataSet = DataSetParser().parse(argv[1]);
 
-    L2::HashFunction hashFunc(4, 20, 100, 2.0f);
+    L2::HashFunction hashFunc(4, 6, 100, 2.0f);
 
     L2::DistanceFunction distFunc;
 
     lsh::HashSet<DataPoint> hashSet(hashFunc, distFunc, 125, dataSet);
 
-    hashSet.add(dataSet);
-
     int ok = 0;
 
-    for (unsigned int t = 0; t < 300; ++t)
+    std::clock_t begin = std::clock();
+
+    for (unsigned int t = 0; t < 100; ++t)
     {
-        Array<int> found;
+        auto result = hashSet[dataSet[t]];
 
-        std::clock_t begin = std::clock();
-
-        double sDist = std::numeric_limits<double>::max();
-        unsigned int r = 999999;
-        auto sum = hashSet.forEachPointInRange(250000.0f, dataSet[t], [&] (unsigned int x, double dist)
+        if (result.found)
         {
-            if (dist > 0 && dist < sDist)
-            {
-                sDist = dist;
-                r = x;
-            }
-            found.emplaceBack(x);
-        });
-
-        if (r != 999999)
-        {
-            std::cout << "NN : " << t << " -> " << r << " sum: " << sum << std::endl;
+            std::cout << "NN : " << t << " -> " << result.index << " sum: " << result.sum << std::endl;
         }
         else
         {
-            std::cout << "NN : " << t << " -> [FAIL]" << " sum: " << sum << std::endl;
+            std::cout << "NN : " << t << " -> [FAIL]" << " sum: " << result.sum << std::endl;
         }
 
-        if (found.getLength() > 1) ++ok;
+        if (result.found) ++ok;
+    }
 
-        std::clock_t end = std::clock();
-        double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    std::clock_t end = std::clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
-//        std::cout << "time: " << elapsed_secs << " sum: " << sum << std::endl;
+    std::cout << "time: " << elapsed_secs << " sum: " << sum << std::endl;
+
+    std::cout << "stats: " << ok << std::endl;
+
+    return 0;
+}
 
 //        std::clock_t begin2 = std::clock();
 
@@ -76,12 +65,6 @@ int main(int argc, char const* argv[])
 //        double elapsed_secs2 = double(end2 - begin2) / CLOCKS_PER_SEC;
 
 //        std::cout << "time: " << elapsed_secs2 << std::endl;
-    }
-
-    std::cout << "stats: " << ok << std::endl;
-
-    return 0;
-}
 
 /*
 int main (int argc, char* argv[])

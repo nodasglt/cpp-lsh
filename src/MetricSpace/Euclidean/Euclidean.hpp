@@ -1,7 +1,7 @@
 #ifndef __METRICSPACE_EUCLIDEAN_HPP__
 #define __METRICSPACE_EUCLIDEAN_HPP__
 
-#include "../../Containers/Block.hpp"
+#include "Containers/Block.hpp"
 
 namespace MetricSpace {
 namespace Euclidean
