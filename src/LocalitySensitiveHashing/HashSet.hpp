@@ -59,7 +59,8 @@ namespace lsh
         {
             auto keySet = mHashFunc(p);
             unsigned int sum = 0;
-            bool checked[mDataSet.getPointNum()] = { false };
+
+            Array<bool> checked(1000, false);
 
             for (unsigned int i = 0; i < mHashMapArray.getLength(); ++i)
             {
@@ -85,7 +86,8 @@ namespace lsh
         QueryResult operator[] (const PointRef p)
         {
             auto keySet = mHashFunc(p);
-            bool checked[mDataSet.getPointNum()] = { false };
+
+            Array<bool> checked(1000, false);
 
             bool found = false;
             double sDist = 0;
