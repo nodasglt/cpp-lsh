@@ -43,7 +43,7 @@ int main(int argc, char const* argv[])
     std::clock_t end = std::clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
-    std::cout << "time: " << elapsed_secs << " sum: " << sum << std::endl;
+    std::cout << "time: " << elapsed_secs << std::endl;
 
     std::cout << "stats: " << ok << std::endl;
 

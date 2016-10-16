@@ -16,4 +16,4 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(INCLUDE) -c $(CFLAGS) $^ -o $@
 
 clean:
-	rm $(TARGET) $(OBJECTS)
+	rm $(TARGET) $(OBJECTS) massif.out.* gmon.out
