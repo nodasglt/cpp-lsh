@@ -23,6 +23,13 @@ namespace lsh
         using HashFunction = MetricSpace::Generic::HashFunction<PointType>;
         using DistanceFunction = MetricSpace::Generic::DistanceFunction<PointType>;
 
+        struct QueryResult
+        {
+            bool found;
+            unsigned int index;
+            unsigned int sum;
+        };
+
     private:
         const HashFunction& mHashFunc;
         const DistanceFunction& mDistFunc;
@@ -70,15 +77,13 @@ namespace lsh
                 auto key = keySet[i];
                 for (auto& x : mHashMapArray[i][key])
                 {
-                    //std::cout << x.target << std::endl;
                     if (x.key == key && !checked[x.target])
                     {
-                        ++sum;
+                        sum++;
                         double dist = mDistFunc(mDataSet[x.target], p);
                         if (dist < R)
                         {
                             func(x.target, dist);
-                            //sum++;
                         }
                         checked[x.target] = true;
                     }
@@ -88,7 +93,38 @@ namespace lsh
             return sum;
         }
 
-        unsigned int operator[] (const PointRef p);
+        QueryResult operator[] (const PointRef p)
+        {
+            auto keySet = mHashFunc(p);
+            bool checked[mDataSet.getPointNum()] = { false };
+
+            bool found = false;
+            double sDist = 0;
+            unsigned int r = 0;
+            unsigned int sum = 0;
+
+            for (unsigned int i = 0; i < mHashMapArray.getLength(); ++i)
+            {
+                auto key = keySet[i];
+                for (auto& x : mHashMapArray[i][key])
+                {
+                    if (x.key == key && !checked[x.target])
+                    {
+                        sum++;
+                        double dist = mDistFunc(mDataSet[x.target], p);
+                        if (dist < sDist || !found)
+                        {
+                            found = true;
+                            sDist = dist;
+                            r = x.target;
+                        }
+                        checked[x.target] = true;
+                    }
+                }
+            }
+
+            return {found, r, sum};
+        }
     };
 }
 
