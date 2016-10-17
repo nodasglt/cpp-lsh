@@ -5,10 +5,24 @@
 
 #include "MetricSpace/Euclidean/L2/Metric.hpp"
 #include "LocalitySensitiveHashing/HashSet.hpp"
+#include "Containers/BitArray.hpp"
 
 int main(int argc, char const* argv[])
 {
     std::srand(std::time(nullptr));
+
+    BitArray<64> A;
+
+    for (int i = 0; i < 16; ++i)
+    {
+        A[i] = true;
+
+        std::cout << (uint64_t)A << std::endl;
+    }
+
+    BitArray<65> B;
+
+    return 0;
 
     using namespace MetricSpace::Euclidean;
 
@@ -22,9 +36,11 @@ int main(int argc, char const* argv[])
 
     int ok = 0;
 
+    unsigned int sum = 0;
+
     std::clock_t begin = std::clock();
 
-    for (unsigned int t = 0; t < 100; ++t)
+    for (unsigned int t = 0; t < 1000; ++t)
     {
         auto result = hashSet[dataSet[t]];
 
@@ -37,6 +53,8 @@ int main(int argc, char const* argv[])
             std::cout << "NN : " << t << " -> [FAIL]" << " sum: " << result.sum << std::endl;
         }
 
+        sum += result.sum;
+
         if (result.found) ++ok;
     }
 
@@ -45,7 +63,7 @@ int main(int argc, char const* argv[])
 
     std::cout << "time: " << elapsed_secs << std::endl;
 
-    std::cout << "stats: " << ok << std::endl;
+    std::cout << "stats: " << ok << " sum avg: " << sum / dataSet.getPointNum() << std::endl;
 
     return 0;
 }

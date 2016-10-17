@@ -14,17 +14,21 @@ public:
         BitReference& operator= (bool x)
         {
             mByte = (x) ? (mByte | mMask) : (mByte & ~mMask);
+
+            return *this;
         }
 
         BitReference& operator= (const BitReference& x)
         {
             mByte = x.mByte;
             mMask = x.mMask;
+
+            return *this;
         }
 
         operator bool() const
         {
-            return bool{ mByte & mMask };
+            return mByte & mMask;
         }
 
         bool operator~() const
@@ -35,7 +39,11 @@ public:
         BitReference& flip()
         {
             mByte ^= mMask;
+
+            return *this;
         }
+
+        friend class BitArray;
 
     private:
         BitReference(uint8_t* byteArray, std::size_t i) : mByte(byteArray[i / sNumBits]), mMask(1U << (i % sNumBits)) {}
@@ -43,8 +51,6 @@ public:
         uint8_t& mByte;
         uint8_t  mMask;
     };
-
-    friend class BitReference;
 
 public:
     BitArray () : mData() {}
@@ -79,8 +85,24 @@ public:
         return BitReference(mData, i);
     }
 
+    explicit operator uint64_t () const
+    {
+        static_assert(sSize <= 64, "BitArray: Length exceeds 64 bits. Cannot convert to uint64_t.");
+
+        uint64_t rtn = 0;
+
+        uint8_t shift = 0;
+
+        for (unsigned i = 0; i < sRequiredBytes; ++i, shift += 8)
+        {
+            rtn |= (uint64_t)mData[i] << shift;
+        }
+
+        return rtn;
+    }
+
 private:
-    static constexpr std::size_t sNumBits = sizeof(uint8_t);
+    static constexpr std::size_t sNumBits = 8 * sizeof(uint8_t);
     static constexpr std::size_t sRequiredBytes = (sSize + (sNumBits - 1)) / sNumBits;
 
     uint8_t mData[sRequiredBytes];
