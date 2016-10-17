@@ -1,11 +1,12 @@
 #include <cstdlib>
 #include <cmath>
+#include <cassert>
 
 #include "Random.hpp"
 
 namespace Util
 {
-    uint64_t Random::nextInt () const
+    int Random::nextInt () const
     {
         return std::rand();
     }
@@ -13,11 +14,13 @@ namespace Util
     /*
     ** Generate a number in [0, max]
     */
-    uint64_t Random::nextInt (uint64_t max) const
+    int Random::nextInt (int max) const
     {
-        uint64_t randomMax = (uint64_t)RAND_MAX + 1;
+        assert(max > 0);
 
-        uint64_t x;
+        int64_t randomMax = int64_t{RAND_MAX} + 1;
+
+        int x;
 
         do
         {
@@ -25,20 +28,20 @@ namespace Util
         }
         while ((randomMax - randomMax % (max + 1)) <= x);
 
-        return x / (randomMax / (max + 1));
+        return x / (int)(randomMax / int64_t{ max + 1 });
     }
 
     /*
     ** Generate a number in [min, max]
     */
-    int64_t Random::nextInt (int64_t min, int64_t max) const
+    int Random::nextInt (int min, int max) const
     {
-        return nextInt((uint64_t)(max - min)) + min;
+        return nextInt(max - min) + min;
     }
 
     double Random::nextDouble () const
     {
-        return nextInt() * (1.0f / RAND_MAX);
+        return nextInt() / double{ RAND_MAX };
     }
 
     double Random::nextDouble (double min, double max) const
@@ -48,11 +51,11 @@ namespace Util
 
     GaussianRandom::GaussianRandom() : mIsStored(false), mX(0.0f), mY(0.0f), mRandom() {}
 
-    double GaussianRandom::nextDouble ()
+    double GaussianRandom::nextDouble () const
     {
         using namespace std;
 
-        const double twoPi = 2.0f * 3.14159265358979323846f;
+        static constexpr double twoPi = 2.0f * 3.14159265358979323846f;
 
         if(!mIsStored)
         {
@@ -65,7 +68,7 @@ namespace Util
         return mX * (mIsStored ? sin(mY) : cos(mY));
     }
 
-    double GaussianRandom::nextDouble (double mean, double stddev)
+    double GaussianRandom::nextDouble (double mean, double stddev) const
     {
         return nextDouble() * stddev + mean;
     }

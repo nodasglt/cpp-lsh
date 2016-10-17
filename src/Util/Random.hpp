@@ -7,17 +7,17 @@ namespace Util
 {
     struct Random
     {
-        uint64_t nextInt () const;
+        int nextInt () const;
 
         /*
         ** Generate a number in [0, max]
         */
-        uint64_t nextInt (uint64_t max) const;
+        int nextInt (int max) const;
 
         /*
         ** Generate a number in [1, max]
         */
-        int64_t nextInt (int64_t min, int64_t max) const;
+        int nextInt (int min, int max) const;
 
         double nextDouble () const;
 
@@ -27,14 +27,14 @@ namespace Util
     struct GaussianRandom
     {
         GaussianRandom();
-        
-        double nextDouble ();
 
-        double nextDouble (double mean, double stddev);
+        double nextDouble () const;
+
+        double nextDouble (double mean, double stddev) const;
 
     private:
-        bool mIsStored;
-        double mX, mY;
+        mutable bool mIsStored;
+        mutable double mX, mY;
         Random mRandom;
     };
 }
