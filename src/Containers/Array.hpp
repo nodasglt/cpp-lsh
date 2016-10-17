@@ -2,9 +2,6 @@
 #define __ARRAY_H__
 
 #include <iostream>
-#include <functional>
-#include <utility>
-#include <array>
 
 #include "Block.hpp"
 
