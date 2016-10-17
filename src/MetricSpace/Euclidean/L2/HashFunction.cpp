@@ -11,7 +11,7 @@ namespace Euclidean
     namespace L2
     {
         HashFunction::HashFunction (unsigned int l, unsigned int m, unsigned int d, double w)
-        : Generic::HashFunction<DataPoint>(l), lines(l, m), constants(l, m), rConstants(l, m), window(w)
+        : Generic::HashFunction<DataPoint>(l), lines(l, m), constants(l, m), hashFunctionWeights(l, m), window(w)
         {
             Util::Random uniformRandom;
             Util::GaussianRandom normalRandom;
@@ -37,11 +37,11 @@ namespace Euclidean
                 }
             }
 
-            for (unsigned int i = 0; i < rConstants.getColSize(); ++i)
+            for (unsigned int i = 0; i < hashFunctionWeights.getColSize(); ++i)
             {
-                for (int32_t& c : rConstants.row(i))
+                for (int& c : hashFunctionWeights.row(i))
                 {
-                    c = uniformRandom.nextInt();
+                    c = int{uniformRandom.nextInt()};
                 }
             }
         }
@@ -56,14 +56,14 @@ namespace Euclidean
             return sum;
         }
 
-        uint32_t HashFunction::getKeyAtIndex (const PointRef p, unsigned int i) const
+        uint64_t HashFunction::getKeyAtIndex (const PointRef p, unsigned int i) const
         {
             int64_t sumInt = 0;
             for (unsigned int j = 0; j < lines.getRowSize(); ++j)
             {
-                sumInt += rConstants(i, j) * (int64_t)floor( ( dot(p, lines(i, j)) + constants(i, j) ) / window );
+                sumInt += int64_t{hashFunctionWeights(i, j)} * (int64_t)floor( ( dot(p, lines(i, j)) + constants(i, j) ) / window );
             }
-            return abs(sumInt) % 4294967291;
+            return ((sumInt < 0) ? -sumInt : sumInt); // % 4294967291;
         }
     }
 }}

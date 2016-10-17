@@ -15,12 +15,12 @@ namespace Euclidean
         {
             HashFunction(unsigned int hashTablesNum, unsigned int functionsPerHashTable, unsigned int vectorDim, double window);
 
-            uint32_t getKeyAtIndex (const PointRef p, unsigned int i) const;
+            uint64_t getKeyAtIndex (const PointRef p, unsigned int i) const override;
 
          private:
             Matrix<Array<double>> lines;
             Matrix<double> constants;
-            Matrix<int32_t> rConstants;
+            Matrix<int> hashFunctionWeights;
             const double window;
         };
     }
