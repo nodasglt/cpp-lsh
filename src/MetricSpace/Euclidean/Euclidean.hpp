@@ -8,8 +8,8 @@ namespace Euclidean
 {
     struct DataPoint
     {
-        using Type = Block<double*, double>;
-        using RefType = Block<double*, double>;
+        using Type = Block<double>;
+        using RefType = Block<double>;
     };
 }}
 

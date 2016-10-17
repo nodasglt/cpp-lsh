@@ -4,7 +4,7 @@
 #include <iostream>
 #include <iomanip>
 
-template<typename BufferType, typename T>
+template<typename T, typename BufferType = T*>
 class Block
 {
  private:
@@ -174,8 +174,8 @@ class Block
      }
 };
 
-template<typename BufferType, typename T>
-std::ostream& operator<< (std::ostream &os, const Block<BufferType, T>& m)
+template<typename T, typename BufferType>
+std::ostream& operator<< (std::ostream &os, const Block<T, BufferType>& m)
 {
     os << '[';
 

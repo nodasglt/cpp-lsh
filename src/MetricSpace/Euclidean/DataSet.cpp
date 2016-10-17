@@ -15,7 +15,7 @@ DataSet& DataSet::operator= (DataSet other)
     return *this;
 }
 
-Block<double*, double> DataSet::operator[] (unsigned int i) const
+Block<double> DataSet::operator[] (unsigned int i) const
 {
     return mVectors.row(i);
 }

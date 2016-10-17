@@ -233,12 +233,12 @@ class Array
         return mCapacity;
     }
 
-    operator Block<T*, T> ()
+    operator Block<T> ()
     {
         return { mData, mLength, 1 };
     }
 
-    operator const Block<T*, T> () const
+    operator const Block<T> () const
     {
         return { mData, mLength, 1 };
     }

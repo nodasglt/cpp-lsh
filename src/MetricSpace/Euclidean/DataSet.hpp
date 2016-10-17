@@ -32,7 +32,7 @@ namespace Euclidean
 
          DataSet& operator= (DataSet other);
 
-         Block<double*, double> operator[] (unsigned int i) const override;
+         Block<double> operator[] (unsigned int i) const override;
 
          unsigned int getPointNum () const override;
          unsigned int getVectorDim() const;

@@ -71,22 +71,22 @@ class Matrix
          return mColSize;
      }
 
-     const Block<T*, T> row (unsigned int i) const
+     const Block<T> row (unsigned int i) const
      {
          return {mArray + mRowSize * i, mRowSize, 1};
      }
 
-     Block<T*, T> row (unsigned int i)
+     Block<T> row (unsigned int i)
      {
          return {mArray + mRowSize * i, mRowSize, 1};
      }
 
-     const Block<T*, T> col (unsigned int i) const
+     const Block<T> col (unsigned int i) const
      {
          return {mArray + i, mColSize, mRowSize};
      }
 
-     Block<T*, T> col (unsigned int i)
+     Block<T> col (unsigned int i)
      {
          return {mArray + i, mColSize, mRowSize};
      }
