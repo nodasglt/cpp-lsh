@@ -13,10 +13,10 @@ class StaticHashMap
 
     struct Pair
     {
-      unsigned int key;
+      uint64_t key;
       T target;
-      Pair (unsigned int k, T&& t) : key(k), target(std::move(t)) {};
-      Pair (unsigned int k, const T& t) : key(k), target(t) {};
+      Pair (uint64_t k, T&& t) : key(k), target(std::move(t)) {};
+      Pair (uint64_t k, const T& t) : key(k), target(t) {};
 
       //NOT CopyConstructible :: avoid copies, pairs are always unique in a HashTable
       Pair (const Pair&) = delete;
