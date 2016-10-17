@@ -47,32 +47,32 @@ class StaticHashMap
 
 	~StaticHashMap () {}
 
-    bool exists (const unsigned int key) const
+    bool exists (const uint64_t key) const
     {
-        for (const Pair& x : mTable[key % mTable.getLength()])
+        for (const Pair& x : mTable[key % (uint64_t)mTable.getLength()])
         {
             if (x.key == key) return true;
         }
         return false;
     }
 
-    void add (const unsigned int key, const T& target)
+    void add (const uint64_t key, const T& target)
     {
         //if (exists(key)) throw std::invalid_argument( "Key already exists." );
 
-        mTable[key % mTable.getLength()].pushBack(Pair(key, target));
+        mTable[key % (uint64_t)mTable.getLength()].pushBack(Pair(key, target));
     }
 
-    void add (const unsigned int key, T&& target)
+    void add (const uint64_t key, T&& target)
     {
         //if (exists(key)) throw std::invalid_argument( "Key already exists." );
 
-        mTable[key % mTable.getLength()].pushBack(Pair(key, std::move(target)));
+        mTable[key % (uint64_t)mTable.getLength()].pushBack(Pair(key, std::move(target)));
     }
 
-    const Array<Pair>& operator[] (const unsigned int key) const
+    const Array<Pair>& operator[] (const uint64_t key) const
     {
-        return mTable[key % mTable.getLength()];
+        return mTable[key % (uint64_t)mTable.getLength()];
     }
 
     void for_each (const std::function<void (const Pair&)> func) const
@@ -94,7 +94,7 @@ class StaticHashMap
         });
     }
 
-    void for_each_key (const std::function<void (const int&)> func) const
+    void for_each_key (const std::function<void (const uint64_t&)> func) const
     {
         for_each([&] (const Pair& x)
         {
