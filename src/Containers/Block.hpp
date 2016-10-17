@@ -43,7 +43,7 @@ class Block
              mCurrentIndex += mOffset;
          }
 
-         T operator* () const
+         const T& operator* () const
          {
              return mData[mCurrentIndex];
          }
@@ -69,12 +69,7 @@ class Block
          return {mArray, mOffset * mSize, mOffset};
      }
 
-     iterator end()
-     {
-         return {mArray, mOffset * mSize, mOffset};
-     }
-
-     T operator[] (unsigned int i) const
+     const T& operator[] (unsigned int i) const
      {
          return mArray[i * mOffset];
      }
