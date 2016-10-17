@@ -101,22 +101,18 @@ class Matrix
          return mArray[i * mRowSize + j];
      }
 
+     friend void swap(Matrix& A, Matrix& B)
+     {
+         std::swap(A.mColSize, B.mColSize);
+         std::swap(A.mRowSize, B.mRowSize);
+         std::swap(A.mArray, B.mArray);
+     }
+
      ~Matrix()
      {
          delete [] mArray;
      }
-
-     template<typename G>
-     friend void std::swap(Matrix<G>& A, Matrix<G>& B);
 };
-
-template<typename T>
-void std::swap(Matrix<T>& A, Matrix<T>& B)
-{
-    std::swap(A.mColSize, B.mColSize);
-    std::swap(A.mRowSize, B.mRowSize);
-    std::swap(A.mArray, B.mArray);
-}
 
 template <typename T>
 std::ostream& operator<< (std::ostream &os, const Matrix<T>& m)
