@@ -14,6 +14,8 @@ namespace Generic
         virtual Point operator[] (unsigned int i) const = 0;
 
         virtual unsigned int getPointNum () const = 0;
+
+        virtual ~DataSet() {}
     };
 }}
 

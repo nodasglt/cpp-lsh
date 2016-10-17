@@ -1,6 +1,8 @@
 #ifndef __LSH_HASHFUNCTION_HPP__
 #define __LSH_HASHFUNCTION_HPP__
 
+#include <cinttypes>
+
 namespace MetricSpace {
 namespace Generic
 {
@@ -17,7 +19,7 @@ namespace Generic
 
             KeyGenerator (const HashFunction& hashData, const PointRef dataPoint) : mHashData(hashData), mPoint(dataPoint) {}
 
-            uint32_t operator[] (unsigned int i) const
+            uint64_t operator[] (unsigned int i) const
             {
                 return mHashData.getKeyAtIndex(mPoint, i);
             }
@@ -35,7 +37,9 @@ namespace Generic
             return KeyGenerator(*this, p);
         }
 
-        virtual uint32_t getKeyAtIndex (const PointRef p, unsigned int i) const = 0;
+        virtual uint64_t getKeyAtIndex (const PointRef p, unsigned int i) const = 0;
+
+        virtual ~HashFunction() {}
 
      private:
         const unsigned int mKeyNum;

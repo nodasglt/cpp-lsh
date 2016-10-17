@@ -11,6 +11,8 @@ namespace Generic
         using PointRef = typename PointType::RefType;
 
         virtual double operator() (const PointRef x, const PointRef y) const = 0;
+
+        virtual ~DistanceFunction() {}
     };
 }}
 
