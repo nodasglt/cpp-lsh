@@ -1,8 +1,8 @@
 #ifndef __METRICSPACE_EUCLIDEAN_L2_DISTANCEFUNCTION_HPP__
 #define __METRICSPACE_EUCLIDEAN_L2_DISTANCEFUNCTION_HPP__
 
-#include "../../Generic/DistanceFunction.hpp"
-#include "../Euclidean.hpp"
+#include "../Generic/DistanceFunction.hpp"
+#include "Euclidean.hpp"
 
 namespace MetricSpace {
 namespace Euclidean
