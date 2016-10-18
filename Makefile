@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -Wall -std=c++11 -Os -pedantic-errors
-LDFLAGS =
+LDFLAGS = -pthread
 INCLUDE = -I ./src/
 
 TARGET = run

@@ -2,6 +2,8 @@
 #define __LSH_HASHSET_HPP__
 
 #include <functional>
+#include <thread>
+#include <future>
 
 #include "Containers/Array.hpp"
 #include "Containers/StaticHashMap.hpp"
@@ -14,7 +16,7 @@ namespace lsh
     {
     public:
         using Point = typename PointType::Type;
-        using PointRef = typename PointType::RefType;
+        using ConstPointRef = typename PointType::ConstRefType;
 
         using DataSet = MetricSpace::Generic::DataSet<PointType>;
         using HashFunction = MetricSpace::Generic::HashFunction<PointType>;
@@ -44,6 +46,7 @@ namespace lsh
                 mHashMapArray.emplaceBack(hashMapSize);
             }
 
+            /*
             for (unsigned int i = 0; i < mDataSet.getPointNum(); ++i)
             {
                 auto keySet = mHashFunc(mDataSet[i]);
@@ -53,9 +56,32 @@ namespace lsh
                     mHashMapArray[j].add(keySet[j], i);
                 }
             }
+            */
+
+            // NOTE: Experimental thread support
+            Array<std::thread> pool;
+            pool.reserve(mHashMapArray.getLength());
+
+            for (unsigned int j = 0; j < mHashMapArray.getLength(); ++j)
+            {
+                pool.emplaceBack(std::thread([this, j]()
+                {
+                    for (unsigned int i = 0; i < mDataSet.getPointNum(); ++i)
+                    {
+                        auto key = mHashFunc.getKeyAtIndex(mDataSet[i], j);
+                        mHashMapArray[j].add(key, i);
+                    }
+                }));
+            }
+
+            for (auto& x : pool)
+            {
+                x.join();
+            }
+
         }
 
-        unsigned int forEachPointInRange (double R, const PointRef p, std::function<void (unsigned int, double)> func)
+        unsigned int forEachPointInRange (double R, ConstPointRef p, std::function<void (unsigned int, double)> func)
         {
             auto keySet = mHashFunc(p);
             unsigned int sum = 0;
@@ -83,7 +109,7 @@ namespace lsh
             return sum;
         }
 
-        QueryResult operator[] (const PointRef p)
+        QueryResult operator[] (ConstPointRef p)
         {
             auto keySet = mHashFunc(p);
 
