@@ -9,9 +9,9 @@ namespace Generic
     {
      public:
         using Point = typename PointType::Type;
-        using PointRef = typename PointType::RefType;
+        using ConstPointRef = typename PointType::ConstRefType;
 
-        virtual Point operator[] (unsigned int i) const = 0;
+        virtual ConstPointRef operator[] (unsigned int i) const = 0;
 
         virtual unsigned int getPointNum () const = 0;
 

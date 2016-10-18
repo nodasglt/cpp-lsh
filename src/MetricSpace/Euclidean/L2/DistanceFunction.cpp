@@ -5,7 +5,7 @@ namespace Euclidean
 {
     namespace L2
     {
-        double DistanceFunction::operator() (const PointRef x, const PointRef y) const
+        double DistanceFunction::operator() (ConstPointRef x, ConstPointRef y) const
         {
             double sum = 0.0f;
             for (unsigned int i = 0; i < x.getLength(); ++i)

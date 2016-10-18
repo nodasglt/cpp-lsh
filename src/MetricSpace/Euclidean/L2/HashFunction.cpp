@@ -46,7 +46,7 @@ namespace Euclidean
             }
         }
 
-        static double dot (const HashFunction::PointRef x, const HashFunction::PointRef y)
+        static double dot (HashFunction::ConstPointRef x, HashFunction::ConstPointRef y)
         {
             double sum = 0.0f;
             for (unsigned int i = 0; i < x.getLength(); ++i)
@@ -56,7 +56,7 @@ namespace Euclidean
             return sum;
         }
 
-        uint64_t HashFunction::getKeyAtIndex (const PointRef p, unsigned int i) const
+        uint64_t HashFunction::getKeyAtIndex (ConstPointRef p, unsigned int i) const
         {
             int64_t sumInt = 0;
             for (unsigned int j = 0; j < lines.getRowSize(); ++j)

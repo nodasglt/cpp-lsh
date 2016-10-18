@@ -10,14 +10,14 @@ namespace Generic
     struct HashFunction
     {
         using Point = typename PointType::Type;
-        using PointRef = typename PointType::RefType;
+        using ConstPointRef = typename PointType::ConstRefType;
 
         struct KeyGenerator
         {
             const HashFunction& mHashData;
-            const PointRef mPoint;
+            ConstPointRef mPoint;
 
-            KeyGenerator (const HashFunction& hashData, const PointRef dataPoint) : mHashData(hashData), mPoint(dataPoint) {}
+            KeyGenerator (const HashFunction& hashData, ConstPointRef dataPoint) : mHashData(hashData), mPoint(dataPoint) {}
 
             uint64_t operator[] (unsigned int i) const
             {
@@ -32,12 +32,12 @@ namespace Generic
             return mKeyNum;
         }
 
-        const KeyGenerator operator() (const PointRef p) const
+        const KeyGenerator operator() (ConstPointRef p) const
         {
             return KeyGenerator(*this, p);
         }
 
-        virtual uint64_t getKeyAtIndex (const PointRef p, unsigned int i) const = 0;
+        virtual uint64_t getKeyAtIndex (ConstPointRef p, unsigned int i) const = 0;
 
         virtual ~HashFunction() {}
 

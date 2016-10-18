@@ -15,7 +15,7 @@ namespace Euclidean
         {
             HashFunction(unsigned int hashTablesNum, unsigned int functionsPerHashTable, unsigned int vectorDim, double window);
 
-            uint64_t getKeyAtIndex (const PointRef p, unsigned int i) const override;
+            uint64_t getKeyAtIndex (ConstPointRef p, unsigned int i) const override;
 
          private:
             Matrix<Array<double>> lines;

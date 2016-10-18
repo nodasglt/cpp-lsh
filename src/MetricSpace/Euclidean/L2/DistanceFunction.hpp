@@ -11,7 +11,7 @@ namespace Euclidean
     {
         struct DistanceFunction : public Generic::DistanceFunction<DataPoint>
         {
-            double operator() (const PointRef x, const PointRef y) const override;
+            double operator() (ConstPointRef x, ConstPointRef y) const override;
         };
     }
 }}
