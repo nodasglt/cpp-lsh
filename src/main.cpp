@@ -34,11 +34,11 @@ int main(int argc, char const* argv[])
 
         if (result.found)
         {
-            std::cout << "NN : " << t << " -> " << result.index << " sum: " << result.sum << std::endl;
+            //std::cout << "NN : " << t << " -> " << result.index << /*"\tdist: " << distFunc(dataSet[result.index], dataSet[t]) <<*/ "\tsum: " << result.sum << std::endl;
         }
         else
         {
-            std::cout << "NN : " << t << " -> [FAIL]" << " sum: " << result.sum << std::endl;
+            //std::cout << "NN : " << t << " -> [FAIL]" << " sum: " << result.sum << std::endl;
         }
 
         sum += result.sum;
@@ -49,9 +49,43 @@ int main(int argc, char const* argv[])
     std::clock_t end = std::clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
-    std::cout << "time: " << elapsed_secs << std::endl;
+    std::cout << "time: " << elapsed_secs << "\tqps: " << 1 / (elapsed_secs / dataSet.getPointNum()) << std::endl;
 
-    std::cout << "stats: " << ok << " sum avg: " << sum / dataSet.getPointNum() << std::endl;
+    std::cout << "stats: " << (100 * (dataSet.getPointNum() - (double)ok))/dataSet.getPointNum() << "% fail rate\tsum avg: " << (double)sum / dataSet.getPointNum() << std::endl;
+return 0;
+//========= Brute Force ================================================================================================================
+
+    int ok_bf = 0;
+
+    unsigned int sum_bf = 0;
+
+    std::clock_t begin_bf = std::clock();
+
+    for (unsigned int t = 0; t < 1000; ++t)
+    {
+        auto result = hashSet.bruteForce(dataSet[t]);
+
+        if (result.found)
+        {
+            //std::cout << "NN : " << t << " -> " << result.index << /*"\tdist: " << distFunc(dataSet[result.index], dataSet[t]) <<*/ "\tsum: " << result.sum << std::endl;
+        }
+        else
+        {
+            //std::cout << "NN : " << t << " -> [FAIL]" << " sum: " << result.sum << std::endl;
+        }
+
+        sum_bf += result.sum;
+
+        if (result.found) ++ok_bf;
+    }
+
+    std::clock_t end_bf = std::clock();
+    double elapsed_secs_bf = double(end_bf - begin_bf) / CLOCKS_PER_SEC;
+
+    std::cout << "time: " << elapsed_secs_bf << "\tqps: " << 1 / (elapsed_secs_bf / dataSet.getPointNum()) << std::endl;
+
+    std::cout << "stats: " << (100 * (dataSet.getPointNum() - (double)ok_bf))/dataSet.getPointNum() << "% fail rate\tsum avg: " << (double)sum_bf / dataSet.getPointNum() << std::endl;
+
 
     return 0;
 }

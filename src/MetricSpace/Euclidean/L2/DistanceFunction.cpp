@@ -1,4 +1,5 @@
 #include "DistanceFunction.hpp"
+#include <cmath>
 
 namespace MetricSpace {
 namespace Euclidean
@@ -13,7 +14,7 @@ namespace Euclidean
                 double dif = x[i] - y[i];
                 sum += dif * dif;
             }
-            return sum;
+            return sqrt(sum);
         }
     }
 }}

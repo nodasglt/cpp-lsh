@@ -6,17 +6,17 @@
 
 #include "Array.hpp"
 
-template <typename T>
+template <typename KeyType, typename T>
 class StaticHashMap
 {
   public:
 
     struct Pair
     {
-      uint64_t key;
+      KeyType key;
       T target;
-      Pair (uint64_t k, T&& t) : key(k), target(std::move(t)) {};
-      Pair (uint64_t k, const T& t) : key(k), target(t) {};
+      Pair (KeyType k, T&& t) : key(k), target(std::move(t)) {};
+      Pair (KeyType k, const T& t) : key(k), target(t) {};
 
       //NOT CopyConstructible :: avoid copies, pairs are always unique in a HashTable
       Pair (const Pair&) = delete;
@@ -47,32 +47,49 @@ class StaticHashMap
 
 	~StaticHashMap () {}
 
-    bool exists (const uint64_t key) const
+    bool exists (const KeyType key) const
     {
-        for (const Pair& x : mTable[key % (uint64_t)mTable.getLength()])
+        for (const Pair& x : mTable[key % mTable.getLength()])
         {
             if (x.key == key) return true;
         }
         return false;
     }
 
-    void add (const uint64_t key, const T& target)
+    void add (const KeyType key, const T& target) /* Copy-Contruct */
     {
-        //if (exists(key)) throw std::invalid_argument( "Key already exists." );
+        if (exists(key)) throw std::invalid_argument( "Key already exists." );
 
-        mTable[key % (uint64_t)mTable.getLength()].pushBack(Pair(key, target));
+        mTable[key % mTable.getLength()].pushBack(Pair(key, target));
     }
 
-    void add (const uint64_t key, T&& target)
+    void add (const KeyType key, T&& target) /* Move-Contruct */
     {
-        //if (exists(key)) throw std::invalid_argument( "Key already exists." );
+        if (exists(key)) throw std::invalid_argument( "Key already exists." );
 
-        mTable[key % (uint64_t)mTable.getLength()].pushBack(Pair(key, std::move(target)));
+        mTable[key % mTable.getLength()].pushBack(Pair(key, std::move(target)));
     }
 
-    const Array<Pair>& operator[] (const uint64_t key) const
+    void remove (const KeyType key)
     {
-        return mTable[key % (uint64_t)mTable.getLength()];
+        Array<Pair>& bucket = mTable[key % mTable.getLength()];
+
+        for (typename Array<Pair>::sizeType i = 0; i < bucket.getLength(); i++)
+        {
+            if (bucket[i].key == key) return bucket.remove(i);
+        }
+
+        throw std::invalid_argument( "Item not in HashTable." );
+    }
+
+    T& operator[] (const KeyType key)
+    {
+        for (Pair& x : mTable[key % mTable.getLength()])
+        {
+            if (x.key == key) return x.target;
+        }
+
+        throw std::invalid_argument( "Item not in HashTable." );
     }
 
     void for_each (const std::function<void (const Pair&)> func) const
@@ -94,7 +111,7 @@ class StaticHashMap
         });
     }
 
-    void for_each_key (const std::function<void (const uint64_t&)> func) const
+    void for_each_key (const std::function<void (const int&)> func) const
     {
         for_each([&] (const Pair& x)
         {
@@ -107,16 +124,16 @@ class StaticHashMap
         return mTable.getLength();
     }
 
-    template <typename M>
-    friend std::ostream& operator<< (std::ostream& os, const StaticHashMap<M>& ht);
+    template <typename K, typename M>
+    friend std::ostream& operator<< (std::ostream& os, const StaticHashMap<K, M>& ht);
 };
 
-template <typename T>
-std::ostream& operator<< (std::ostream& os, const StaticHashMap<T>& ht)
+template <typename KeyType, typename T>
+std::ostream& operator<< (std::ostream& os, const StaticHashMap<KeyType, T>& ht)
 {
     os << '{';
     bool first = true;
-    ht.for_each([&] (const typename StaticHashMap<T>::Pair& x)
+    ht.for_each([&] (auto& x)
     {
         if (!first) os << ", "; else first = false;
 

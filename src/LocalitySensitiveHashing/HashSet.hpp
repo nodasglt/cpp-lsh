@@ -6,6 +6,7 @@
 #include "Containers/Array.hpp"
 #include "Containers/StaticHashMap.hpp"
 #include "MetricSpace/Generic/Metric.hpp"
+#include "Containers/DynamicBitArray.hpp"
 
 namespace lsh
 {
@@ -23,59 +24,67 @@ namespace lsh
         struct QueryResult
         {
             bool found;
-            unsigned int index;
-            unsigned int sum;
+            unsigned index;
+            unsigned sum;
         };
 
     private:
         const HashFunction& mHashFunc;
         const DistanceFunction& mDistFunc;
-        Array<StaticHashMap<unsigned int>> mHashMapArray; /* TODO: Upgrade to a more cache friendly data structure */
+        Array<StaticHashMap<uint64_t, Array<unsigned>>> mHashMapArray; /* TODO: Upgrade to a more cache friendly data structure */
         const DataSet& mDataSet;
 
     public:
-        HashSet (const HashFunction& hashFunc, const DistanceFunction& distFunc, unsigned int hashMapSize, const DataSet& dataSet)
+        HashSet (const HashFunction& hashFunc, const DistanceFunction& distFunc, unsigned hashMapSize, const DataSet& dataSet)
             : mHashFunc(hashFunc), mDistFunc(distFunc), mHashMapArray(), mDataSet(dataSet)
         {
             mHashMapArray.reserve(mHashFunc.getKeyNum());
 
-            for (unsigned int i = 0; i < mHashFunc.getKeyNum(); ++i)
+            for (unsigned i = 0; i < mHashFunc.getKeyNum(); ++i)
             {
                 mHashMapArray.emplaceBack(hashMapSize);
             }
 
-            for (unsigned int i = 0; i < mDataSet.getPointNum(); ++i)
+            for (unsigned i = 0; i < mDataSet.getPointNum(); ++i)
             {
                 auto keySet = mHashFunc(mDataSet[i]);
 
-                for (unsigned int j = 0; j < mHashMapArray.getLength(); ++j)
+                for (unsigned j = 0; j < mHashMapArray.getLength(); ++j)
                 {
-                    mHashMapArray[j].add(keySet[j], i);
+                    auto key = keySet[j];
+                    if (mHashMapArray[j].exists(key))
+                    {
+                        mHashMapArray[j][key].emplaceBack(i);
+                    }
+                    else
+                    {
+                        mHashMapArray[j].add(key, Array<unsigned>(1, i));
+                    }
                 }
             }
+            //std::cout << mHashMapArray << std::endl;
         }
 
-        unsigned int forEachPointInRange (double R, const PointRef p, std::function<void (unsigned int, double)> func)
+        unsigned forEachPointInRange (double R, const PointRef p, std::function<void (unsigned, double)> func)
         {
             auto keySet = mHashFunc(p);
-            unsigned int sum = 0;
+            unsigned sum = 0;
 
             Array<bool> checked(1000, false);
 
-            for (unsigned int i = 0; i < mHashMapArray.getLength(); ++i)
+            for (unsigned i = 0; i < mHashMapArray.getLength(); ++i)
             {
-                auto key = keySet[i];
-                for (auto& x : mHashMapArray[i][key])
+                for (auto x : mHashMapArray[i][keySet[i]])
                 {
-                    if (x.key == key && !checked[x.target])
+                    if (!checked[x])
                     {
                         sum++;
-                        double dist = mDistFunc(mDataSet[x.target], p);
+                        double dist = mDistFunc(mDataSet[x], p);
                         if (dist < R)
                         {
-                            func(x.target, dist);
+                            func(x, dist);
                         }
-                        checked[x.target] = true;
+                        checked[x] = true;
                     }
                 }
             }
@@ -87,34 +96,53 @@ namespace lsh
         {
             auto keySet = mHashFunc(p);
 
-            Array<bool> checked(1000, false);
+            Array<bool> checked(mDataSet.getPointNum(), false);
 
             bool found = false;
             double sDist = 0;
-            unsigned int r = 0;
-            unsigned int sum = 0;
+            unsigned r = 0;
+            unsigned sum = 0;
 
-            for (unsigned int i = 0; i < mHashMapArray.getLength(); ++i)
+            for (unsigned i = 0; i < mHashMapArray.getLength(); ++i)
             {
-                auto key = keySet[i];
-                for (auto& x : mHashMapArray[i][key])
+                for (auto x : mHashMapArray[i][keySet[i]])
                 {
-                    if (x.key == key && !checked[x.target])
+                    if (!checked[x])
                     {
                         sum++;
-                        double dist = mDistFunc(mDataSet[x.target], p);
+                        double dist = mDistFunc(mDataSet[x], p);
                         if ((dist < sDist || !found) && dist > 0/* NOTE: ignore existing values for testing -- remove when testSet is available */)
                         {
                             found = true;
                             sDist = dist;
-                            r = x.target;
+                            r = x;
                         }
-                        checked[x.target] = true;
+                        checked[x] = true;
                     }
                 }
             }
 
             return {found, r, sum};
+        }
+
+        QueryResult bruteForce (const PointRef p)
+        {
+            bool found = false;
+            double sDist = 0;
+            unsigned r = 0;
+
+            for (unsigned i = 0; i < mDataSet.getPointNum(); ++i)
+            {
+                double dist = mDistFunc(mDataSet[i], p);
+                if ((dist < sDist || !found) && dist > 0/* NOTE: ignore existing values for testing -- remove when testSet is available */)
+                {
+                    found = true;
+                    sDist = dist;
+                    r = i;
+                }
+            }
+
+            return {found, r, 1000};
         }
     };
 }
