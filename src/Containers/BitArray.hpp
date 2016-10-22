@@ -35,6 +35,24 @@ public:
         mData[i / sNumBits] ^=  (1U << (i % sNumBits));
     }
 
+    int count () const
+    {
+        static constexpr uint8_t setBitsAtIndex[] = {0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4};
+        // setBits:
+        // Look-up Table. Contains the number of set bits of all possible 4 bit numbers
+        // index | binary | set_bits
+        //   0  --> 0000 --> 0
+        //   3  --> 0011 --> 2
+        //   6  --> 0110 --> 2
+
+        int sum = 0;
+        for (unsigned i = 0; i < sRequiredBytes; ++i)
+        {
+            sum += setBitsAtIndex[mData[i] & 0xF] + setBitsAtIndex[(mData[i] >> 4) & 0xF];
+        }
+        return sum;
+    }
+
     std::size_t getLength () const
     {
         return sSize;
@@ -48,6 +66,16 @@ public:
     BitReference operator[] (std::size_t i)
     {
         return BitReference(mData, i, sNumBits);
+    }
+
+    BitArray& operator^= (const BitArray& other)
+    {
+        for (unsigned i = 0; i < sRequiredBytes; ++i)
+        {
+            mData[i] ^= other.mData[i];
+        }
+
+        return *this;
     }
 
     explicit operator uint64_t () const
@@ -72,5 +100,11 @@ private:
 
     uint8_t mData[sRequiredBytes];
 };
+
+template<std::size_t sNumBits>
+BitArray<sNumBits> operator^ (BitArray<sNumBits> x, const BitArray<sNumBits>& y)
+{
+    return x ^= y;
+}
 
 #endif /* end of include guard: __BITARRAY_HPP__ */

@@ -2,6 +2,8 @@
 #define __LSH_HASHSET_HPP__
 
 #include <functional>
+#include <thread>
+#include <future>
 
 #include "Containers/Array.hpp"
 #include "Containers/StaticHashMap.hpp"
@@ -15,7 +17,7 @@ namespace lsh
     {
     public:
         using Point = typename PointType::Type;
-        using PointRef = typename PointType::RefType;
+        using ConstPointRef = typename PointType::ConstRefType;
 
         using DataSet = MetricSpace::Generic::DataSet<PointType>;
         using HashFunction = MetricSpace::Generic::HashFunction<PointType>;
@@ -65,7 +67,30 @@ namespace lsh
             //std::cout << mHashMapArray << std::endl;
         }
 
-        unsigned forEachPointInRange (double R, const PointRef p, std::function<void (unsigned, double)> func)
+/*
+            // NOTE: Experimental thread support
+            Array<std::thread> pool;
+            pool.reserve(mHashMapArray.getLength());
+
+            for (unsigned int j = 0; j < mHashMapArray.getLength(); ++j)
+            {
+                pool.emplaceBack(std::thread([this, j]()
+                {
+                    for (unsigned int i = 0; i < mDataSet.getPointNum(); ++i)
+                    {
+                        auto key = mHashFunc.getKeyAtIndex(mDataSet[i], j);
+                        mHashMapArray[j].add(key, i);
+                    }
+                }));
+            }
+
+            for (auto& x : pool)
+            {
+                x.join();
+            }
+*/
+
+        unsigned int forEachPointInRange (double R, ConstPointRef p, std::function<void (unsigned int, double)> func)
         {
             auto keySet = mHashFunc(p);
             unsigned sum = 0;
@@ -92,7 +117,7 @@ namespace lsh
             return sum;
         }
 
-        QueryResult operator[] (const PointRef p)
+        QueryResult operator[] (ConstPointRef p)
         {
             auto keySet = mHashFunc(p);
 
@@ -125,7 +150,7 @@ namespace lsh
             return {found, r, sum};
         }
 
-        QueryResult bruteForce (const PointRef p)
+        QueryResult bruteForce (const ConstPointRef p)
         {
             bool found = false;
             double sDist = 0;

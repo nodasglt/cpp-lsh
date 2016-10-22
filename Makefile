@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -Wall -std=c++14 -Os -pedantic-errors
-LDFLAGS =
+LDFLAGS = -pthread
 INCLUDE = -I ./src/
 PROFILE = -pg --coverage
 

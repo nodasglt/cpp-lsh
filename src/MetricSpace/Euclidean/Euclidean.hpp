@@ -9,7 +9,7 @@ namespace Euclidean
     struct DataPoint
     {
         using Type = Block<double>;
-        using RefType = Block<double>;
+        using ConstRefType = Block<double>;
     };
 }}
 

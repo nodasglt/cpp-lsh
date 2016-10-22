@@ -8,9 +8,9 @@ namespace Generic
     struct DistanceFunction
     {
         using Point = typename PointType::Type;
-        using PointRef = typename PointType::RefType;
+        using ConstPointRef = typename PointType::ConstRefType;
 
-        virtual double operator() (const PointRef x, const PointRef y) const = 0;
+        virtual double operator() (ConstPointRef x, ConstPointRef y) const = 0;
 
         virtual ~DistanceFunction() {}
     };
