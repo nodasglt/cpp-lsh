@@ -1,8 +1,8 @@
 #include "DataSet.hpp"
 
-using namespace MetricSpace::Euclidean;
+using namespace MetricSpace::Hamming;
 
-DataSet::DataSet(Matrix<double>&& m) : mVectors(std::move(m)) {}
+DataSet::DataSet(Array<BitArray<64>>&& m) : mVectors(std::move(m)) {}
 
 DataSet::DataSet(DataSet&& other) : mVectors(std::move(other.mVectors)) {}
 
@@ -17,15 +17,15 @@ DataSet& DataSet::operator= (DataSet other)
 
 DataSet::ConstPointRef DataSet::operator[] (unsigned int i) const
 {
-    return mVectors.row(i);
+    return mVectors[i];
 }
 
 unsigned int DataSet::getPointNum() const
 {
-    return mVectors.getColSize();
+    return mVectors.getLength();
 }
 
 unsigned int DataSet::getVectorDim() const
 {
-    return mVectors.getRowSize();
+    return mVectors[0].getLength();
 }

@@ -1,24 +1,24 @@
-#ifndef __METRICSPACE_EUCLIDEAN_DATASET_HPP__
-#define __METRICSPACE_EUCLIDEAN_DATASET_HPP__
+#ifndef __METRICSPACE_HAMMING_DATASET_HPP__
+#define __METRICSPACE_HAMMING_DATASET_HPP__
 
 #include <iostream>
 #include <cstdlib>
 #include <string>
 
-#include "Containers/Matrix.hpp"
+#include "Containers/Array.hpp"
 #include "../Generic/DataSet.hpp"
-#include "Euclidean.hpp"
+#include "Hamming.hpp"
 
 namespace MetricSpace {
-namespace Euclidean
+namespace Hamming
 {
     class DataSet : public Generic::DataSet<DataPoint>
     {
      private:
-        Matrix<double> mVectors;
+        Array<BitArray<64>> mVectors;
 
      public:
-         DataSet(Matrix<double>&& m);
+         DataSet(Array<BitArray<64>>&& m);
 
          DataSet(DataSet&& other);
          DataSet(const DataSet& other);
@@ -32,4 +32,4 @@ namespace Euclidean
     };
 }}
 
-#endif /* end of include guard: __METRICSPACE_EUCLIDEAN_DATASET_HPP__ */
+#endif /* end of include guard: __METRICSPACE_HAMMING_DATASET_HPP__ */

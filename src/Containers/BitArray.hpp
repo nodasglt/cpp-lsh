@@ -107,4 +107,17 @@ BitArray<sNumBits> operator^ (BitArray<sNumBits> x, const BitArray<sNumBits>& y)
     return x ^= y;
 }
 
+template<std::size_t sNumBits>
+std::ostream& operator<< (std::ostream &os, const BitArray<sNumBits>& arr)
+{
+    os << '\"';
+
+    for (unsigned i = 0; i < sNumBits; ++i)
+    {
+        os << arr[i];
+    }
+
+    return os << '\"';
+}
+
 #endif /* end of include guard: __BITARRAY_HPP__ */

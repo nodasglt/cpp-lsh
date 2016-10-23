@@ -4,21 +4,21 @@
 #include <random>
 
 #include "MetricSpace/Euclidean/L2/Metric.hpp"
+#include "MetricSpace/Hamming/Metric.hpp"
 #include "LocalitySensitiveHashing/HashSet.hpp"
-#include "Containers/BitArray.hpp"
-#include "Util/Random.hpp"
+#include "Parser.hpp"
 
 int main(int argc, char const* argv[])
 {
     std::srand(std::time(nullptr));
 
-    using namespace MetricSpace::Euclidean;
+    using namespace MetricSpace::Hamming;
 
-    auto dataSet = DataSetParser().parse(argv[1]);
+    auto dataSet = Parser::parse<DataSet>(argv[1]);
 
-    L2::HashFunction hashFunc(4, 6, 100, 2.0f);
+    HashFunction hashFunc(4, 10, 64);
 
-    L2::DistanceFunction distFunc;
+    DistanceFunction distFunc;
 
     lsh::HashSet<DataPoint> hashSet(hashFunc, distFunc, 125, dataSet);
 
@@ -34,7 +34,7 @@ int main(int argc, char const* argv[])
 
         if (result.found)
         {
-            //std::cout << "NN : " << t << " -> " << result.index << /*"\tdist: " << distFunc(dataSet[result.index], dataSet[t]) <<*/ "\tsum: " << result.sum << std::endl;
+            std::cout << "NN : " << t << " -> " << result.index << "\tdist: " << distFunc(dataSet[result.index], dataSet[t]) << "\tsum: " << result.sum << std::endl;
         }
         else
         {
@@ -52,7 +52,7 @@ int main(int argc, char const* argv[])
     std::cout << "time: " << elapsed_secs << "\tqps: " << 1 / (elapsed_secs / dataSet.getPointNum()) << std::endl;
 
     std::cout << "stats: " << (100 * (dataSet.getPointNum() - (double)ok))/dataSet.getPointNum() << "% fail rate\tsum avg: " << (double)sum / dataSet.getPointNum() << std::endl;
-return 0;
+
 //========= Brute Force ================================================================================================================
 
     int ok_bf = 0;
@@ -67,7 +67,7 @@ return 0;
 
         if (result.found)
         {
-            //std::cout << "NN : " << t << " -> " << result.index << /*"\tdist: " << distFunc(dataSet[result.index], dataSet[t]) <<*/ "\tsum: " << result.sum << std::endl;
+            //std::cout << "NN : " << t << " -> " << result.index << "\tdist: " << distFunc(dataSet[result.index], dataSet[t]) << "\tsum: " << result.sum << std::endl;
         }
         else
         {

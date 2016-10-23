@@ -1,8 +1,8 @@
 CC = g++
 CFLAGS = -Wall -std=c++14 -Os -pedantic-errors
-LDFLAGS = -pthread
+LDFLAGS = #-pthread
 INCLUDE = -I ./src/
-PROFILE = -pg --coverage
+PROFILE = #-pg --coverage
 
 TARGET = run
 
@@ -17,8 +17,9 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(INCLUDE) -c $(PROFILE) $(CFLAGS) $^ -o $@
 
 clean:
+	rm $(TARGET) $(OBJECTS)
 	rm -r ./Data
-	rm $(TARGET) $(OBJECTS) massif.out.* gmon.out
+	rm massif.out.* gmon.out
 
 profile:
 	mkdir ./Data
