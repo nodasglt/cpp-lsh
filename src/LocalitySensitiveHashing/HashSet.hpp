@@ -95,7 +95,7 @@ namespace lsh
             auto keySet = mHashFunc(p);
             unsigned sum = 0;
 
-            Array<bool> checked(1000, false);
+            Array<bool> checked(mDataSet.getLength(), false);
 
             for (unsigned i = 0; i < mHashMapArray.getLength(); ++i)
             {

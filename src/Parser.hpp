@@ -19,6 +19,9 @@ namespace Parser
 
     template<>
     MetricSpace::Hamming::DataSet parse<MetricSpace::Hamming::DataSet>(const std::string& fileName);
+
+//    template<>
+//    MetricSpace::DistMatrix::DistanceFunction parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName);
 }
 
 #endif /* end of include guard: __PARSER_HPP__ */
