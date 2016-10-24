@@ -8,19 +8,12 @@
 #include "LocalitySensitiveHashing/HashSet.hpp"
 #include "Parser.hpp"
 
-int main(int argc, char const* argv[])
+using namespace MetricSpace;
+
+template<typename DataPointType>
+void run (Generic::DataSet<DataPointType>& dataSet, Generic::HashFunction<DataPointType>& hashFunc, Generic::DistanceFunction<DataPointType>& distFunc)
 {
-    std::srand(std::time(nullptr));
-
-    using namespace MetricSpace::Hamming;
-
-    auto dataSet = Parser::parse<DataSet>(argv[1]);
-
-    HashFunction hashFunc(4, 10, 64);
-
-    DistanceFunction distFunc;
-
-    lsh::HashSet<DataPoint> hashSet(hashFunc, distFunc, 125, dataSet);
+    lsh::HashSet<DataPointType> hashSet(hashFunc, distFunc, 125, dataSet);
 
     int ok = 0;
 
@@ -55,37 +48,83 @@ int main(int argc, char const* argv[])
 
 //========= Brute Force ================================================================================================================
 
-    int ok_bf = 0;
-
-    unsigned int sum_bf = 0;
-
     std::clock_t begin_bf = std::clock();
 
     for (unsigned int t = 0; t < 1000; ++t)
     {
-        auto result = hashSet.bruteForce(dataSet[t]);
+        bool found = false;
+        double curMinDist = 0;
+        unsigned index = 0;
 
-        if (result.found)
+        for (unsigned i = 0; i < dataSet.getPointNum(); ++i)
         {
-            //std::cout << "NN : " << t << " -> " << result.index << "\tdist: " << distFunc(dataSet[result.index], dataSet[t]) << "\tsum: " << result.sum << std::endl;
-        }
-        else
-        {
-            //std::cout << "NN : " << t << " -> [FAIL]" << " sum: " << result.sum << std::endl;
+            double dist = distFunc(dataSet[i], dataSet[t]);
+            if ((dist < curMinDist || !found) && dist > 0/* NOTE: ignore existing values for testing -- remove when testSet is available */)
+            {
+                found = true;
+                curMinDist = dist;
+                index = i;
+            }
         }
 
-        sum_bf += result.sum;
 
-        if (result.found) ++ok_bf;
+        //std::cout << "NN : " << t << " -> " << index << "\tdist: " << distFunc(dataSet[index], dataSet[t]) << std::endl;
     }
 
     std::clock_t end_bf = std::clock();
     double elapsed_secs_bf = double(end_bf - begin_bf) / CLOCKS_PER_SEC;
 
     std::cout << "time: " << elapsed_secs_bf << "\tqps: " << 1 / (elapsed_secs_bf / dataSet.getPointNum()) << std::endl;
+}
 
-    std::cout << "stats: " << (100 * (dataSet.getPointNum() - (double)ok_bf))/dataSet.getPointNum() << "% fail rate\tsum avg: " << (double)sum_bf / dataSet.getPointNum() << std::endl;
+int main(int argc, char const* argv[])
+{
+    std::srand(std::time(nullptr));
 
+    std::ifstream file(argv[1]);
+    std::string metricSpace;
+    file >> metricSpace >> metricSpace;
+    file.close();
+
+    Parser::Flags metric;
+    if (metricSpace == "euclidean")
+    {
+        using namespace Euclidean;
+
+        auto dataSet = Parser::parse<DataSet>(argv[1], metric);
+
+        if (metric == Parser::Flags::euclidean)
+        {
+            L2::HashFunction hashFunc(4, 6, 100, 1.5f);
+            L2::DistanceFunction distFunc;
+            run(dataSet, hashFunc, distFunc);
+        }
+        else
+        {
+            assert(0);
+        }
+    }
+    else if (metricSpace == "hamming")
+    {
+        using namespace Hamming;
+
+        auto dataSet = Parser::parse<DataSet>(argv[1], metric);
+
+        if (metric == Parser::Flags::none)
+        {
+            HashFunction hashFunc(4, 10, 64);
+            DistanceFunction distFunc;
+            run(dataSet, hashFunc, distFunc);
+        }
+        else
+        {
+            assert(0);
+        }
+    }
+    else
+    {
+        assert(0);
+    }
 
     return 0;
 }

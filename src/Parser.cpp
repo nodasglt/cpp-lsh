@@ -42,7 +42,7 @@ namespace Parser
     }
 
     template<>
-    MetricSpace::Euclidean::DataSet parse<MetricSpace::Euclidean::DataSet>(const std::string& fileName)
+    MetricSpace::Euclidean::DataSet parse<MetricSpace::Euclidean::DataSet>(const std::string& fileName, Flags& returnFlags)
     {
        std::ifstream file(fileName);
 
@@ -56,7 +56,7 @@ namespace Parser
        file >> metric >> metric;
        if (metric == "euclidean")
        {
-           //mMetric = Metric::euclidean;
+           returnFlags = Flags::euclidean;
        }
        else throw;
 
@@ -79,13 +79,15 @@ namespace Parser
     }
 
     template<>
-    MetricSpace::Hamming::DataSet parse<MetricSpace::Hamming::DataSet>(const std::string& fileName)
+    MetricSpace::Hamming::DataSet parse<MetricSpace::Hamming::DataSet>(const std::string& fileName, Flags& returnFlags)
     {
         std::ifstream file(fileName);
 
         std::string metricSpace;
         file >> metricSpace >> metricSpace;
         if (metricSpace != "hamming") throw;
+
+        returnFlags = Flags::none;
 
         Array<BitArray<64>> vecs(getVectorNum(fileName) - 1);
 
