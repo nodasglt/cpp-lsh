@@ -121,4 +121,38 @@ namespace Parser
 
         return {std::move(vecs)};
     }
+
+    template<>
+    MetricSpace::DistMatrix::DistanceFunction parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName, Flags& returnFlags)
+    {
+        std::ifstream file(fileName);
+
+        std::string metricSpace;
+        file >> metricSpace >> metricSpace;
+        if (metricSpace != "matrix") throw;
+
+        returnFlags = Flags::none;
+
+        auto dim = getVectorNum(fileName) - 2;
+        Matrix<double> vecs(dim, dim);
+
+        std::string id;
+        file >> id;
+        std::getline(file, id);
+
+        //std::cout << id << std::endl;
+
+        for (unsigned i = 0; i < vecs.getColSize(); ++i)
+        {
+            for (unsigned j = 0; ; ++j)
+            {
+                file >> vecs(i, j);
+                if (j == vecs.getRowSize() - 1) break;
+            }
+        }
+
+        //std::cout << vecs << std::endl;
+
+        return {std::move(vecs)};
+    }
 }

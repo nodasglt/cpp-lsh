@@ -5,6 +5,7 @@
 
 #include "MetricSpace/Euclidean/L2/Metric.hpp"
 #include "MetricSpace/Hamming/Metric.hpp"
+#include "MetricSpace/DistMatrix/Metric.hpp"
 #include "LocalitySensitiveHashing/HashSet.hpp"
 #include "Parser.hpp"
 
@@ -27,7 +28,7 @@ void run (Generic::DataSet<DataPointType>& dataSet, Generic::HashFunction<DataPo
 
         if (result.found)
         {
-            std::cout << "NN : " << t << " -> " << result.index << "\tdist: " << distFunc(dataSet[result.index], dataSet[t]) << "\tsum: " << result.sum << std::endl;
+            //std::cout << "NN : " << t << " -> " << result.index << "\tdist: " << distFunc(dataSet[result.index], dataSet[t]) << "\tsum: " << result.sum << std::endl;
         }
         else
         {
@@ -95,7 +96,7 @@ int main(int argc, char const* argv[])
 
         if (metric == Parser::Flags::euclidean)
         {
-            L2::HashFunction hashFunc(4, 6, 100, 1.5f);
+            L2::HashFunction hashFunc(4, 6, dataSet.getVectorDim(), 1.5f);
             L2::DistanceFunction distFunc;
             run(dataSet, hashFunc, distFunc);
         }
@@ -115,6 +116,22 @@ int main(int argc, char const* argv[])
             HashFunction hashFunc(4, 10, 64);
             DistanceFunction distFunc;
             run(dataSet, hashFunc, distFunc);
+        }
+        else
+        {
+            assert(0);
+        }
+    }
+    else if (metricSpace == "matrix")
+    {
+        using namespace DistMatrix;
+
+        auto distFunc = Parser::parse<DistanceFunction>(argv[1], metric);
+
+        if (metric == Parser::Flags::none)
+        {
+            HashFunction hashFunc(4, 10, distFunc);
+            run(distFunc, hashFunc, distFunc);
         }
         else
         {

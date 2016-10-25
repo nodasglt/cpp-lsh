@@ -1,5 +1,5 @@
-#ifndef __GENERIC_DATASET_HPP__
-#define __GENERIC_DATASET_HPP__
+#ifndef __METRICSPACE_GENERIC_DATASET_HPP__
+#define __METRICSPACE_GENERIC_DATASET_HPP__
 
 namespace MetricSpace {
 namespace Generic
@@ -19,4 +19,4 @@ namespace Generic
     };
 }}
 
-#endif /* end of include guard: __GENERIC_DATASET_HPP__ */
+#endif /* end of include guard: __METRICSPACE_GENERIC_DATASET_HPP__ */

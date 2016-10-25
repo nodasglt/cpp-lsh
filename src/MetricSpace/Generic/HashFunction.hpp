@@ -1,5 +1,5 @@
-#ifndef __LSH_HASHFUNCTION_HPP__
-#define __LSH_HASHFUNCTION_HPP__
+#ifndef __METRICSPACE_GENERIC_HASHFUNCTION_HPP__
+#define __METRICSPACE_GENERIC_HASHFUNCTION_HPP__
 
 #include <cinttypes>
 
@@ -46,4 +46,4 @@ namespace Generic
     };
 }}
 
-#endif /* end of include guard: __LSH_HASHFUNCTION_HPP__ */
+#endif /* end of include guard: __METRICSPACE_GENERIC_HASHFUNCTION_HPP__ */

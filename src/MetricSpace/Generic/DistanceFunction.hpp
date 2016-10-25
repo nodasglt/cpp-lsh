@@ -1,5 +1,5 @@
-#ifndef __LSH_DISTANCEFUNCTION_HPP__
-#define __LSH_DISTANCEFUNCTION_HPP__
+#ifndef __METRICSPACE_GENERIC_DISTANCEFUNCTION_HPP__
+#define __METRICSPACE_GENERIC_DISTANCEFUNCTION_HPP__
 
 namespace MetricSpace {
 namespace Generic
@@ -16,4 +16,4 @@ namespace Generic
     };
 }}
 
-#endif /* end of include guard: __LSH_DISTANCEFUNCTION_HPP__ */
+#endif /* end of include guard: __METRICSPACE_GENERIC_DISTANCEFUNCTION_HPP__ */

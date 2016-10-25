@@ -111,7 +111,7 @@ class StaticHashMap
         });
     }
 
-    void for_each_key (const std::function<void (const int&)> func) const
+    void for_each_key (const std::function<void (const KeyType&)> func) const
     {
         for_each([&] (const Pair& x)
         {

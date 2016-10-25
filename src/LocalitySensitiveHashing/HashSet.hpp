@@ -2,8 +2,6 @@
 #define __LSH_HASHSET_HPP__
 
 #include <functional>
-#include <thread>
-#include <future>
 
 #include "Containers/Array.hpp"
 #include "Containers/StaticHashMap.hpp"
@@ -65,6 +63,12 @@ namespace lsh
                 }
             }
             //std::cout << mHashMapArray << std::endl;
+
+            int i = 0;
+            mHashMapArray[0].for_each([&](auto& x)
+            {
+                std::cout << '[' << i++ << "] " << x.key << " : " << x.target << std::endl;
+            });
         }
 
 /*
@@ -99,7 +103,9 @@ namespace lsh
 
             for (unsigned i = 0; i < mHashMapArray.getLength(); ++i)
             {
-                for (auto x : mHashMapArray[i][keySet[i]])
+                auto key = keySet[i];
+                if (!mHashMapArray[i].exists(key)) continue;
+                for (auto x : mHashMapArray[i][key])
                 {
                     if (!checked[x])
                     {
@@ -130,7 +136,9 @@ namespace lsh
 
             for (unsigned i = 0; i < mHashMapArray.getLength(); ++i)
             {
-                for (auto x : mHashMapArray[i][keySet[i]])
+                auto key = keySet[i];
+                if (!mHashMapArray[i].exists(key)) continue;
+                for (auto x : mHashMapArray[i][key])
                 {
                     if (!checked[x])
                     {
@@ -148,26 +156,6 @@ namespace lsh
             }
 
             return {found, r, sum};
-        }
-
-        QueryResult bruteForce (const ConstPointRef p)
-        {
-            bool found = false;
-            double sDist = 0;
-            unsigned r = 0;
-
-            for (unsigned i = 0; i < mDataSet.getPointNum(); ++i)
-            {
-                double dist = mDistFunc(mDataSet[i], p);
-                if ((dist < sDist || !found) && dist > 0/* NOTE: ignore existing values for testing -- remove when testSet is available */)
-                {
-                    found = true;
-                    sDist = dist;
-                    r = i;
-                }
-            }
-
-            return {found, r, 1000};
         }
     };
 }

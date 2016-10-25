@@ -8,6 +8,7 @@
 
 #include "MetricSpace/Euclidean/DataSet.hpp"
 #include "MetricSpace/Hamming/DataSet.hpp"
+#include "MetricSpace/DistMatrix/DistanceFunction.hpp"
 
 namespace Parser
 {
@@ -22,8 +23,8 @@ namespace Parser
     template<>
     MetricSpace::Hamming::DataSet parse<MetricSpace::Hamming::DataSet>(const std::string& fileName, Flags& returnFlags);
 
-//    template<>
-//    MetricSpace::DistMatrix::DistanceFunction parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName, Flags& returnFlags);
+    template<>
+    MetricSpace::DistMatrix::DistanceFunction parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName, Flags& returnFlags);
 }
 
 #endif /* end of include guard: __PARSER_HPP__ */
