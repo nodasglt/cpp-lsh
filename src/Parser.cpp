@@ -58,6 +58,10 @@ namespace Parser
        {
            returnFlags = Flags::euclidean;
        }
+       else if (metric == "cosine")
+       {
+           returnFlags = Flags::cosine;
+       }
        else throw;
 
        Matrix<double> vecs(getVectorNum(fileName) - 2, getVectorDim(fileName, 4));

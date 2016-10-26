@@ -4,10 +4,13 @@
 #include <random>
 
 #include "MetricSpace/Euclidean/L2/Metric.hpp"
+#include "MetricSpace/Euclidean/Cos/Metric.hpp"
 #include "MetricSpace/Hamming/Metric.hpp"
 #include "MetricSpace/DistMatrix/Metric.hpp"
 #include "LocalitySensitiveHashing/HashSet.hpp"
 #include "Parser.hpp"
+
+#include "Util/VectorMath.hpp"
 
 using namespace MetricSpace;
 
@@ -25,10 +28,30 @@ void run (Generic::DataSet<DataPointType>& dataSet, Generic::HashFunction<DataPo
     for (unsigned int t = 0; t < 1000; ++t)
     {
         auto result = hashSet[dataSet[t]];
+        double trueMinDist = 0;
+        unsigned trueMinIndex = 0;
+
+        {
+            bool found = false;
+
+            for (unsigned i = 0; i < dataSet.getPointNum(); ++i)
+            {
+                double dist = distFunc(dataSet[i], dataSet[t]);
+                if ((dist < trueMinDist || !found) && dist > 0)
+                {
+                    found = true;
+                    trueMinDist = dist;
+                    trueMinIndex = i;
+                }
+            }
+        }
 
         if (result.found)
         {
-            //std::cout << "NN : " << t << " -> " << result.index << "\tdist: " << distFunc(dataSet[result.index], dataSet[t]) << "\tsum: " << result.sum << std::endl;
+            auto ddd = distFunc(dataSet[result.index], dataSet[t]);
+            if (result.index == trueMinIndex) ++ok;
+            std::cout << "NN : " << t << " -> " << result.index << " (true: " << trueMinIndex << ")" << "\tdist: " << ddd <<
+            "\t[" << ((result.index == trueMinIndex) ? "OK]" : "_]") << "\tsum: " << result.sum << std::endl;
         }
         else
         {
@@ -37,7 +60,7 @@ void run (Generic::DataSet<DataPointType>& dataSet, Generic::HashFunction<DataPo
 
         sum += result.sum;
 
-        if (result.found) ++ok;
+        //if (result.found) ++ok;
     }
 
     std::clock_t end = std::clock();
@@ -55,7 +78,7 @@ void run (Generic::DataSet<DataPointType>& dataSet, Generic::HashFunction<DataPo
     {
         bool found = false;
         double curMinDist = 0;
-        unsigned index = 0;
+        //unsigned index = 0;
 
         for (unsigned i = 0; i < dataSet.getPointNum(); ++i)
         {
@@ -64,7 +87,7 @@ void run (Generic::DataSet<DataPointType>& dataSet, Generic::HashFunction<DataPo
             {
                 found = true;
                 curMinDist = dist;
-                index = i;
+                //index = i;
             }
         }
 
@@ -96,8 +119,14 @@ int main(int argc, char const* argv[])
 
         if (metric == Parser::Flags::euclidean)
         {
-            L2::HashFunction hashFunc(4, 6, dataSet.getVectorDim(), 1.5f);
+            L2::HashFunction hashFunc(15, 4, dataSet.getVectorDim(), 60.0f);
             L2::DistanceFunction distFunc;
+            run(dataSet, hashFunc, distFunc);
+        }
+        else if (metric == Parser::Flags::cosine)
+        {
+            Cos::HashFunction hashFunc(2, 20, dataSet.getVectorDim());
+            Cos::DistanceFunction distFunc;
             run(dataSet, hashFunc, distFunc);
         }
         else
@@ -113,7 +142,7 @@ int main(int argc, char const* argv[])
 
         if (metric == Parser::Flags::none)
         {
-            HashFunction hashFunc(4, 10, 64);
+            HashFunction hashFunc(4, 8, 64);
             DistanceFunction distFunc;
             run(dataSet, hashFunc, distFunc);
         }
@@ -130,7 +159,7 @@ int main(int argc, char const* argv[])
 
         if (metric == Parser::Flags::none)
         {
-            HashFunction hashFunc(4, 10, distFunc);
+            HashFunction hashFunc(4, 6, distFunc);
             run(distFunc, hashFunc, distFunc);
         }
         else

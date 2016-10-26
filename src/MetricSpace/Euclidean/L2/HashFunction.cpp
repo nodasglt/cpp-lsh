@@ -3,6 +3,7 @@
 
 #include "HashFunction.hpp"
 #include "Util/Random.hpp"
+#include "Util/VectorMath.hpp"
 
 
 namespace MetricSpace {
@@ -41,19 +42,9 @@ namespace Euclidean
             {
                 for (int& c : hashFunctionWeights.row(i))
                 {
-                    c = int{uniformRandom.nextInt()};
+                    c = int{uniformRandom.nextInt(4096)};
                 }
             }
-        }
-
-        static double dot (HashFunction::ConstPointRef x, HashFunction::ConstPointRef y)
-        {
-            double sum = 0.0f;
-            for (unsigned int i = 0; i < x.getLength(); ++i)
-            {
-                sum = x[i] * y[i];
-            }
-            return sum;
         }
 
         uint64_t HashFunction::getKeyAtIndex (ConstPointRef p, unsigned int i) const
@@ -61,9 +52,9 @@ namespace Euclidean
             int64_t sumInt = 0;
             for (unsigned int j = 0; j < lines.getRowSize(); ++j)
             {
-                sumInt += int64_t{hashFunctionWeights(i, j)} * (int64_t)floor( ( dot(p, lines(i, j)) + constants(i, j) ) / window );
+                sumInt += int64_t{hashFunctionWeights(i, j)} * (int64_t)floor( ( Util::dot(p, lines(i, j)) + constants(i, j) ) / window );
             }
-            return ((sumInt < 0) ? -sumInt : sumInt); // % 4294967291;
+            return ((sumInt < 0) ? -sumInt : sumInt); //% 4294967291;
         }
     }
 }}

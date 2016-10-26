@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-#include "Block.hpp"
-
 template <typename T>
 class Array
 {
@@ -231,16 +229,6 @@ class Array
     sizeType getCapacity () const
     {
         return mCapacity;
-    }
-
-    operator Block<T> ()
-    {
-        return { mData, mLength, 1 };
-    }
-
-    operator const Block<T> () const
-    {
-        return { mData, mLength, 1 };
     }
 
     template <typename U>
