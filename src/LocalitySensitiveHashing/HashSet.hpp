@@ -97,7 +97,7 @@ namespace lsh
         {
             return forEachPointInCluster(p, [=](auto index, auto dist)
             {
-                if (dist < R)
+                if (dist < R && dist > 0.0f)
                 {
                     func(index, dist);
                 }
@@ -112,7 +112,7 @@ namespace lsh
 
             unsigned sum = forEachPointInCluster(p, [&](auto index, auto dist)
             {
-                if ((dist < minDist || !found) /*&& dist > 0 NOTE: ignore existing values for testing*/)
+                if ((dist < minDist || !found) && dist > 0.0f /*NOTE: ignore existing values for testing*/)
                 {
                     found = true;
                     minDist = dist;

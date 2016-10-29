@@ -39,7 +39,7 @@ QueryResult bruteForce (typename DataPointType::Type p, Generic::DataSet<DataPoi
     for (unsigned i = 0; i < dataSet.getPointNum(); ++i)
     {
         double curDist = distFunc(p, dataSet[i]);
-        if (curDist < dist || !found)
+        if ((curDist < dist || !found) && curDist > 0.0f)
         {
             found = true;
             dist = curDist;
@@ -226,7 +226,6 @@ int main(int argc, char const* argv[])
             lsh::HashSet<DataPoint> hashSet(hashFunc, testDistFunc.data, 125, distFunc.data);
             hashFunc.setDistFunction(&testDistFunc.data);
             run(distFunc.data, hashSet, testDistFunc.data, testDistFunc.data, testDistFunc.radius, *outStream);
-            std::cout << testDistFunc.radius << std::endl;
         }
         else
         {
