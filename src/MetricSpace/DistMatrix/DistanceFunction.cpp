@@ -4,11 +4,11 @@ namespace MetricSpace
 {
     namespace DistMatrix
     {
-        DistanceFunction::DistanceFunction(Matrix<double>&& distances) : distanceTable(std::move(distances)) {}
+        DistanceFunction::DistanceFunction(Matrix<double>&& distances) : mDistanceMatrix(std::move(distances)) {}
 
         double DistanceFunction::operator() (unsigned x, unsigned y) const
         {
-            return distanceTable(x, y);
+            return mDistanceMatrix(x, y);
         }
 
         unsigned DistanceFunction::operator[] (unsigned int i) const
@@ -18,7 +18,7 @@ namespace MetricSpace
 
         unsigned int DistanceFunction::getPointNum () const
         {
-            return distanceTable.getRowSize();
+            return mDistanceMatrix.getColSize();
         }
     }
 }

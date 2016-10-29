@@ -11,14 +11,15 @@ namespace Euclidean
 {
     namespace Cos
     {
-        struct HashFunction : public Generic::HashFunction<DataPoint>
+        class HashFunction : public Generic::HashFunction<DataPoint>
         {
+        public:
             HashFunction(unsigned int hashTablesNum, unsigned int functionsPerHashTable, unsigned int vectorDim);
 
             uint64_t getKeyAtIndex (ConstPointRef p, unsigned int i) const override;
 
          private:
-            Matrix<Array<double>> lines;
+            Matrix<Array<double>> mLines;
         };
     }
 }}

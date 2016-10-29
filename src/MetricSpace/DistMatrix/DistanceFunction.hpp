@@ -10,8 +10,9 @@ namespace MetricSpace
 {
     namespace DistMatrix
     {
-        struct DistanceFunction : public Generic::DistanceFunction<DataPoint>, public Generic::DataSet<DataPoint>
+        class DistanceFunction : public Generic::DistanceFunction<DataPoint>, public Generic::DataSet<DataPoint>
         {
+        public:
             DistanceFunction(Matrix<double>&& distances);
 
             double operator() (unsigned x, unsigned y) const override;
@@ -20,7 +21,7 @@ namespace MetricSpace
             unsigned int getPointNum () const override;
 
         private:
-            Matrix<double> distanceTable;
+            Matrix<double> mDistanceMatrix;
         };
     }
 }

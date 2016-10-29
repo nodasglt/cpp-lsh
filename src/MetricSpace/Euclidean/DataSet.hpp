@@ -28,7 +28,7 @@ namespace Euclidean
          ConstPointRef operator[] (unsigned int i) const override;
 
          unsigned int getPointNum () const override;
-         unsigned int getVectorDim() const;
+         unsigned int getVectorDim () const;
     };
 }}
 

@@ -8,6 +8,7 @@ namespace Hamming
 {
     struct DataPoint
     {
+        //NOTE: Switch to Containers/DynamicBitArray if input length > 64 bits.
         using Type = BitArray<64>;
         using ConstRefType = const BitArray<64>&;
     };

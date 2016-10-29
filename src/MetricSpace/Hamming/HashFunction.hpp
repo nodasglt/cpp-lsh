@@ -10,14 +10,15 @@ namespace MetricSpace
 {
     namespace Hamming
     {
-        struct HashFunction : public Generic::HashFunction<DataPoint>
+        class HashFunction : public Generic::HashFunction<DataPoint>
         {
+        public:
             HashFunction(unsigned int hashTablesNum, unsigned int functionsPerHashTable, unsigned int bitArrayLength);
 
             uint64_t getKeyAtIndex (ConstPointRef p, unsigned int i) const override;
 
          private:
-            Matrix<std::size_t> returnBitIndex;
+            Matrix<std::size_t> mSelectedBitIndices;
         };
     }
 }

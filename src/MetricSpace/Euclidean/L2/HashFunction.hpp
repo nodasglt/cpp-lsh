@@ -11,17 +11,18 @@ namespace Euclidean
 {
     namespace L2
     {
-        struct HashFunction : public Generic::HashFunction<DataPoint>
+        class HashFunction : public Generic::HashFunction<DataPoint>
         {
+        public:
             HashFunction(unsigned int hashTablesNum, unsigned int functionsPerHashTable, unsigned int vectorDim, double window);
 
             uint64_t getKeyAtIndex (ConstPointRef p, unsigned int i) const override;
 
          private:
-            Matrix<Array<double>> lines;
-            Matrix<double> constants;
-            Matrix<int> hashFunctionWeights;
-            const double window;
+            Matrix<Array<double>> mLines;
+            Matrix<double> mConstants;
+            Matrix<int> mHashFunctionWeights;
+            const double mWindow;
         };
     }
 }}

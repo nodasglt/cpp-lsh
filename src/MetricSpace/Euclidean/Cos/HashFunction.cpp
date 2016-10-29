@@ -10,15 +10,17 @@ namespace Euclidean
     namespace Cos
     {
         HashFunction::HashFunction (unsigned int l, unsigned int m, unsigned int d)
-        : Generic::HashFunction<DataPoint>(l), lines(l, m)
+        : Generic::HashFunction<DataPoint>(l), mLines(l, m)
         {
+            assert(m <= 64);
+
             Util::GaussianRandom normalRandom;
 
-            for (unsigned int i = 0; i < lines.getColSize(); ++i)
+            for (unsigned int i = 0; i < mLines.getColSize(); ++i)
             {
-                for (unsigned int j = 0; j < lines.getRowSize(); ++j)
+                for (unsigned int j = 0; j < mLines.getRowSize(); ++j)
                 {
-                    Array<double>& vec = lines(i, j);
+                    Array<double>& vec = mLines(i, j);
                     vec.reserve(d);
                     for (unsigned int k = 0; k < d; ++k)
                     {
@@ -31,12 +33,10 @@ namespace Euclidean
         uint64_t HashFunction::getKeyAtIndex (ConstPointRef p, unsigned int i) const
         {
             BitArray<64> hash;
-            for (unsigned int j = 0; j < lines.getRowSize(); ++j)
+            for (unsigned int j = 0; j < mLines.getRowSize(); ++j)
             {
-                hash[j] = (Util::dot(lines(i, j), p) >= 0.0f);
-                //if (i == 0) std::cout << Util::dot(lines(i, j), p) << std::endl;
+                hash[j] = (Util::dot(mLines(i, j), p) >= 0.0f);
             }
-            //if (i == 0) std::cout << (uint64_t)hash << std::endl;
             return (uint64_t)hash;
         }
     }

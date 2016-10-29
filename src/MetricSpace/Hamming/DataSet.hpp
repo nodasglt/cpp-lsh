@@ -16,9 +16,10 @@ namespace Hamming
     {
      private:
         Array<BitArray<64>> mVectors;
+        unsigned mDim;
 
      public:
-         DataSet(Array<BitArray<64>>&& m);
+         DataSet(Array<BitArray<64>>&& m, unsigned dim);
 
          DataSet(DataSet&& other);
          DataSet(const DataSet& other);

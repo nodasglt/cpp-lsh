@@ -7,12 +7,14 @@ namespace MetricSpace
 {
     namespace DistMatrix
     {
-        HashFunction::HashFunction (unsigned int hashTablesNum, unsigned int functionsPerHashTable, const DistanceFunction& dist)
-         : Generic::HashFunction<DataPoint>(hashTablesNum), distFunc(dist), lines(hashTablesNum, functionsPerHashTable)
+        HashFunction::HashFunction (unsigned int hashTablesNum, unsigned int functionsPerHashTable, const DistanceFunction* dist)
+         : Generic::HashFunction<DataPoint>(hashTablesNum), mDistFunc(dist), mLines(hashTablesNum, functionsPerHashTable)
         {
+            assert(functionsPerHashTable <= 64);
+
             Util::Random uniformRandom;
 
-            auto pointNum = distFunc.getPointNum();
+            auto pointNum = mDistFunc->getPointNum();
 
             for (unsigned i = 0; i < hashTablesNum; ++i)
             {
@@ -26,42 +28,42 @@ namespace MetricSpace
                     }
                     while (x == y);
 
+                    mLines(i, j).x = x;
+                    mLines(i, j).y = y;
+                    mLines(i, j).length = (*mDistFunc)(x, y);
+
                     double sum = 0.0;
                     for(unsigned n = 0; n < pointNum; ++n)
                     {
-                        sum += project(x, y, n);
+                        sum += project(mLines(i, j), n);
                     }
 
                     double midValue = sum / (double)pointNum;
 
-                    lines(i,j).x = x;
-                    lines(i,j).y = y;
-                    lines(i,j).midValue = midValue;
+                    mLines(i, j).midValue = midValue;
                 }
             }
         }
-
-        double HashFunction::project (ConstPointRef x, ConstPointRef y, ConstPointRef indexToProject) const
+        void HashFunction::setDistFunction (const DistanceFunction* dist)
         {
-            auto distX = distFunc(x, indexToProject);
-            auto distY = distFunc(y, indexToProject);
-            auto distXY = distFunc(x, y);
-
-            return (distX * distX + distY * distY + distXY * distXY) / (2.0f * distXY);
+            mDistFunc = dist;
         }
 
         double HashFunction::project (line l, ConstPointRef indexToProject) const
         {
-            return project(l.x, l.y, indexToProject);
+            auto distX = (*mDistFunc)(indexToProject, l.x);
+            auto distY = (*mDistFunc)(indexToProject, l.y);
+
+            return (distX * distX + distY * distY + l.length * l.length) / (2.0f * l.length);
         }
 
         uint64_t HashFunction::getKeyAtIndex (ConstPointRef p, unsigned int i) const
         {
         	BitArray<64> hash;
 
-            for(unsigned j = 0; j < lines.getRowSize(); j++)
+            for(unsigned j = 0; j < mLines.getRowSize(); j++)
             {
-                hash[j] = (project(lines(i,j), p) >= lines(i, j).midValue);
+                hash[j] = (project(mLines(i,j), p) >= mLines(i, j).midValue);
             }
 
             return (uint64_t)hash ;
