@@ -38,7 +38,7 @@ public:
     int count () const
     {
         static constexpr uint8_t setBitsAtIndex[] = {0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4};
-        // setBits:
+        // setBitsAtIndex:
         // Look-up Table. Contains the number of set bits of all possible 4 bit numbers
         // index | binary | set_bits
         //   0  --> 0000 --> 0
