@@ -25,13 +25,14 @@ namespace lsh
         {
             bool found;
             unsigned index;
+            double dist;
             unsigned sum;
         };
 
     private:
         const HashFunction& mHashFunc;
         const DistanceFunction& mDistFunc;
-        Array<StaticHashMap<uint64_t, Array<unsigned>>> mHashMapArray; /* TODO: Upgrade to a more cache friendly data structure */
+        Array<StaticHashMap<uint64_t, Array<unsigned>>> mHashMapArray;
         const DataSet& mDataSet;
 
     public:
@@ -62,44 +63,14 @@ namespace lsh
                     }
                 }
             }
-            //std::cout << mHashMapArray << std::endl;
-
-            int i = 0;
-            mHashMapArray[0].for_each([&](auto& x)
-            {
-                std::cout << '[' << i++ << "] " << x.key << " : " << x.target << std::endl;
-            });
         }
 
-/*
-            // NOTE: Experimental thread support
-            Array<std::thread> pool;
-            pool.reserve(mHashMapArray.getLength());
-
-            for (unsigned int j = 0; j < mHashMapArray.getLength(); ++j)
-            {
-                pool.emplaceBack(std::thread([this, j]()
-                {
-                    for (unsigned int i = 0; i < mDataSet.getPointNum(); ++i)
-                    {
-                        auto key = mHashFunc.getKeyAtIndex(mDataSet[i], j);
-                        mHashMapArray[j].add(key, i);
-                    }
-                }));
-            }
-
-            for (auto& x : pool)
-            {
-                x.join();
-            }
-*/
-
-        unsigned int forEachPointInRange (double R, ConstPointRef p, std::function<void (unsigned int, double)> func)
+        unsigned forEachPointInCluster (ConstPointRef p, std::function<void (unsigned, double)> func)
         {
             auto keySet = mHashFunc(p);
             unsigned sum = 0;
 
-            Array<bool> checked(mDataSet.getLength(), false);
+            Array<bool> checked(mDataSet.getPointNum(), false);
 
             for (unsigned i = 0; i < mHashMapArray.getLength(); ++i)
             {
@@ -110,11 +81,10 @@ namespace lsh
                     if (!checked[x])
                     {
                         sum++;
-                        double dist = mDistFunc(mDataSet[x], p);
-                        if (dist < R)
-                        {
-                            func(x, dist);
-                        }
+                        double dist = mDistFunc(p, mDataSet[x]);
+
+                        func(x, dist);
+
                         checked[x] = true;
                     }
                 }
@@ -123,39 +93,34 @@ namespace lsh
             return sum;
         }
 
+        unsigned forEachPointInRange (double R, ConstPointRef p, std::function<void (unsigned, double)> func)
+        {
+            return forEachPointInCluster(p, [=](auto index, auto dist)
+            {
+                if (dist < R)
+                {
+                    func(index, dist);
+                }
+            });
+        }
+
         QueryResult operator[] (ConstPointRef p)
         {
-            auto keySet = mHashFunc(p);
-
-            Array<bool> checked(mDataSet.getPointNum(), false);
-
             bool found = false;
-            double sDist = 0;
-            unsigned r = 0;
-            unsigned sum = 0;
+            double minDist = 0;
+            unsigned minIndex = 0;
 
-            for (unsigned i = 0; i < mHashMapArray.getLength(); ++i)
+            unsigned sum = forEachPointInCluster(p, [&](auto index, auto dist)
             {
-                auto key = keySet[i];
-                if (!mHashMapArray[i].exists(key)) continue;
-                for (auto x : mHashMapArray[i][key])
+                if ((dist < minDist || !found) /*&& dist > 0 NOTE: ignore existing values for testing*/)
                 {
-                    if (!checked[x])
-                    {
-                        sum++;
-                        double dist = mDistFunc(mDataSet[x], p);
-                        if ((dist < sDist || !found) && dist > 0/* NOTE: ignore existing values for testing -- remove when testSet is available */)
-                        {
-                            found = true;
-                            sDist = dist;
-                            r = x;
-                        }
-                        checked[x] = true;
-                    }
+                    found = true;
+                    minDist = dist;
+                    minIndex = index;
                 }
-            }
+            });
 
-            return {found, r, sum};
+            return {found, minIndex, minDist, sum};
         }
     };
 }
