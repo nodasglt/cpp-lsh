@@ -42,36 +42,55 @@ namespace Parser
     }
 
     template<>
-    MetricSpace::Euclidean::DataSet parse<MetricSpace::Euclidean::DataSet>(const std::string& fileName, Flags& returnFlags)
+    Result<MetricSpace::Euclidean::DataSet> parse<MetricSpace::Euclidean::DataSet>(const std::string& fileName)
     {
        std::ifstream file(fileName);
 
        /* check metric space type */
        std::string metricSpace;
-       file >> metricSpace >> metricSpace;
-       if (metricSpace != "euclidean") throw;
+       file >> metricSpace;
 
-       /* store requested metric */
-       std::string metric;
-       file >> metric >> metric;
-       if (metric == "euclidean")
-       {
-           returnFlags = Flags::euclidean;
-       }
-       else if (metric == "cosine")
-       {
-           returnFlags = Flags::cosine;
-       }
-       else throw;
+       int skip;
 
-       Matrix<double> vecs(getVectorNum(fileName) - 2, getVectorDim(fileName, 4));
+       Flags returnFlags;
+       double R = 0.0f;
+
+       if (metricSpace == "Radius:")
+       {
+           file >> R;
+
+           returnFlags = Flags::test;
+
+           skip = 1;
+       }
+       else
+       {
+           file >> metricSpace;
+           if (metricSpace != "euclidean") throw;
+
+           /* store requested metric */
+           std::string metric;
+           file >> metric >> metric;
+           if (metric == "euclidean")
+           {
+               returnFlags = Flags::euclidean;
+           }
+           else if (metric == "cosine")
+           {
+               returnFlags = Flags::cosine;
+           }
+           else throw;
+
+           skip = 2;
+       }
+
+       Matrix<double> vecs(getVectorNum(fileName) - skip, getVectorDim(fileName, 2 * skip));
 
        for (unsigned i = 0; i < vecs.getColSize(); ++i)
        {
            std::string id;
            file >> id;
 
-           //std::cout << id << std::endl;
            for (unsigned j = 0; ; ++j)
            {
                file >> vecs(i, j);
@@ -79,23 +98,37 @@ namespace Parser
            }
        }
 
-       return {std::move(vecs)};
+       return {std::move(vecs), returnFlags, R};
     }
 
     template<>
-    MetricSpace::Hamming::DataSet parse<MetricSpace::Hamming::DataSet>(const std::string& fileName, Flags& returnFlags)
+    Result<MetricSpace::Hamming::DataSet> parse<MetricSpace::Hamming::DataSet>(const std::string& fileName)
     {
         std::ifstream file(fileName);
 
         std::string metricSpace;
-        file >> metricSpace >> metricSpace;
-        if (metricSpace != "hamming") throw;
+        file >> metricSpace;
 
-        returnFlags = Flags::none;
+        Flags returnFlags;
+        double R = 0.0f;
+
+        if (metricSpace == "Radius:")
+        {
+            file >> R;
+
+            returnFlags = Flags::test;
+        }
+        else
+        {
+            file >> metricSpace;
+            if (metricSpace != "hamming") throw;
+
+            returnFlags = Flags::none;
+        }
 
         Array<BitArray<64>> vecs(getVectorNum(fileName) - 1);
 
-        std::cout << vecs.getLength() << std::endl;
+        unsigned dim = 0;
 
         for (unsigned i = 0; i < vecs.getLength(); ++i)
         {
@@ -104,6 +137,7 @@ namespace Parser
 
             std::string bits;
             file >> bits;
+            dim = bits.length();
             for(unsigned j = 0; j < bits.length(); ++j)
             {
                 switch (bits[j])
@@ -119,44 +153,68 @@ namespace Parser
                         assert(0);
                 }
             }
-
-            //std::cout << id << '\t' << vecs[i] << std::endl;
         }
 
-        return {std::move(vecs)};
+        return {{std::move(vecs), dim}, returnFlags, R};
     }
 
     template<>
-    MetricSpace::DistMatrix::DistanceFunction parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName, Flags& returnFlags)
+    Result<MetricSpace::DistMatrix::DistanceFunction> parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName)
     {
         std::ifstream file(fileName);
 
         std::string metricSpace;
-        file >> metricSpace >> metricSpace;
-        if (metricSpace != "matrix") throw;
+        file >> metricSpace;
 
-        returnFlags = Flags::none;
+        Flags returnFlags;
+        double R = 0.0f;
 
-        auto dim = getVectorNum(fileName) - 2;
-        Matrix<double> vecs(dim, dim);
-
-        std::string id;
-        file >> id;
-        std::getline(file, id);
-
-        //std::cout << id << std::endl;
-
-        for (unsigned i = 0; i < vecs.getColSize(); ++i)
+        if (metricSpace == "Radius:")
         {
-            for (unsigned j = 0; ; ++j)
+            file >> R;
+
+            returnFlags = Flags::test;
+
+            Matrix<double> vecs(getVectorNum(fileName) - 1, getVectorDim(fileName, 2));
+
+            for (unsigned i = 0; i < vecs.getColSize(); ++i)
             {
-                file >> vecs(i, j);
-                if (j == vecs.getRowSize() - 1) break;
+                std::string id;
+                file >> id;
+
+                for (unsigned j = 0; ; ++j)
+                {
+                    file >> vecs(i, j);
+                    if (j == vecs.getRowSize() - 1) break;
+                }
             }
+
+            return {std::move(vecs), returnFlags, R};
         }
+        else
+        {
+            file >> metricSpace;
+            if (metricSpace != "matrix") throw;
 
-        //std::cout << vecs << std::endl;
+            returnFlags = Flags::none;
 
-        return {std::move(vecs)};
+            auto dim = getVectorNum(fileName) - 2;
+            Matrix<double> vecs(dim, dim);
+
+            std::string id;
+            file >> id;
+            std::getline(file, id);
+
+            for (unsigned i = 0; i < vecs.getColSize(); ++i)
+            {
+                for (unsigned j = 0; ; ++j)
+                {
+                    file >> vecs(i, j);
+                    if (j == vecs.getRowSize() - 1) break;
+                }
+            }
+
+            return {std::move(vecs), returnFlags, R};
+        }
     }
 }

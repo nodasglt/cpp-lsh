@@ -16,10 +16,17 @@ $(TARGET): $(OBJECTS)
 %.o: %.cpp
 	$(CC) $(INCLUDE) -c $(PROFILE) $(CFLAGS) $^ -o $@
 
+debug:
+	mv ./src/main.cpp ./main.cpp
+	mv ./debug.cpp ./src/main.cpp
+	make
+	mv ./src/main.cpp ./debug.cpp
+	mv ./main.cpp ./src/main.cpp
+
 clean:
 	rm $(TARGET) $(OBJECTS)
-	rm -r ./Data
-	rm massif.out.* gmon.out
+#	rm -r ./Data
+#	rm massif.out.* gmon.out
 
 profile:
 	mkdir ./Data

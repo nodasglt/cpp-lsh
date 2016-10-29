@@ -12,19 +12,27 @@
 
 namespace Parser
 {
-    enum class Flags { euclidean, cosine, none };
+    enum class Flags { euclidean, cosine, none, test };
 
     template<typename DataSetType>
-    DataSetType parse(const std::string& filename, Flags& returnFlags);
+    struct Result
+    {
+        DataSetType data;
+        Flags metric;
+        double radius;
+    };
+
+    template<typename DataSetType>
+    Result<DataSetType> parse(const std::string& filename);
 
     template<>
-    MetricSpace::Euclidean::DataSet parse<MetricSpace::Euclidean::DataSet>(const std::string& fileName, Flags& returnFlags);
+    Result<MetricSpace::Euclidean::DataSet> parse<MetricSpace::Euclidean::DataSet>(const std::string& fileName);
 
     template<>
-    MetricSpace::Hamming::DataSet parse<MetricSpace::Hamming::DataSet>(const std::string& fileName, Flags& returnFlags);
+    Result<MetricSpace::Hamming::DataSet> parse<MetricSpace::Hamming::DataSet>(const std::string& fileName);
 
     template<>
-    MetricSpace::DistMatrix::DistanceFunction parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName, Flags& returnFlags);
+    Result<MetricSpace::DistMatrix::DistanceFunction> parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName);
 }
 
 #endif /* end of include guard: __PARSER_HPP__ */

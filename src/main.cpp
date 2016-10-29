@@ -10,208 +10,235 @@
 #include "LocalitySensitiveHashing/HashSet.hpp"
 #include "Parser.hpp"
 
-#include "Util/VectorMath.hpp"
-
 using namespace MetricSpace;
 
-template<typename DataPointType>
-void run (Generic::DataSet<DataPointType>& dataSet, Generic::HashFunction<DataPointType>& hashFunc, Generic::DistanceFunction<DataPointType>& distFunc)
+struct QueryResult
 {
-    lsh::HashSet<DataPointType> hashSet(hashFunc, distFunc, 125, dataSet);
+    unsigned index;
+    double dist;
+};
 
-    int ok = 0;
-
-    unsigned int sum = 0;
-
+double execTime (std::function<void (void)> func)
+{
     std::clock_t begin = std::clock();
 
-    for (unsigned int t = 0; t < 1000; ++t)
+    func();
+
+    std::clock_t end = std::clock();
+    return double(end - begin) / CLOCKS_PER_SEC;
+}
+
+template<typename DataPointType>
+QueryResult bruteForce (typename DataPointType::Type p, Generic::DataSet<DataPointType>& dataSet, Generic::DistanceFunction<DataPointType>& distFunc)
+{
+    double dist = 0;
+    unsigned index = 0;
+
+    bool found = false;
+
+    for (unsigned i = 0; i < dataSet.getPointNum(); ++i)
     {
-        auto result = hashSet[dataSet[t]];
-        double trueMinDist = 0;
-        unsigned trueMinIndex = 0;
-
+        double curDist = distFunc(p, dataSet[i]);
+        if (curDist < dist || !found)
         {
-            bool found = false;
-
-            for (unsigned i = 0; i < dataSet.getPointNum(); ++i)
-            {
-                double dist = distFunc(dataSet[i], dataSet[t]);
-                if ((dist < trueMinDist || !found) && dist > 0)
-                {
-                    found = true;
-                    trueMinDist = dist;
-                    trueMinIndex = i;
-                }
-            }
+            found = true;
+            dist = curDist;
+            index = i;
         }
+    }
 
-        if (result.found)
+    return { index, dist };
+}
+
+template<typename DataPointType>
+void run (Generic::DataSet<DataPointType>& dataSet,
+        lsh::HashSet<DataPointType>& hashSet,
+        Generic::DistanceFunction<DataPointType>& distFunc,
+        Generic::DataSet<DataPointType>& testSet, double R,
+        std::ostream& outStream)
+{
+    for (unsigned i = 0; i < testSet.getPointNum(); ++i)
+    {
+        outStream << "Query: item_idS" << (i + 1) << std::endl;
+
+        outStream << "R-near neighbors:" << std::endl;
+        hashSet.forEachPointInRange(R + 0.5f, testSet[i], [&](auto index, auto)
         {
-            auto ddd = distFunc(dataSet[result.index], dataSet[t]);
-            if (result.index == trueMinIndex) ++ok;
-            std::cout << "NN : " << t << " -> " << result.index << " (true: " << trueMinIndex << ")" << "\tdist: " << ddd <<
-            "\t[" << ((result.index == trueMinIndex) ? "OK]" : "_]") << "\tsum: " << result.sum << std::endl;
+            outStream << "item" << (index + 1) << std::endl;
+        });
+
+        typename lsh::HashSet<DataPointType>::QueryResult lshResult;
+        auto timeLSH = execTime([&]()
+        {
+            lshResult = hashSet[testSet[i]];
+        });
+
+        QueryResult trueResult;
+        auto timeBF = execTime([&]()
+        {
+            trueResult = bruteForce(testSet[i], dataSet, distFunc);
+        });
+
+        if (lshResult.found)
+        {
+            outStream << "Nearest neighbor: item" << (lshResult.index + 1) << std::endl;
+            outStream << "distanceLSH:\t" << lshResult.dist << std::endl;
         }
         else
         {
-            //std::cout << "NN : " << t << " -> [FAIL]" << " sum: " << result.sum << std::endl;
+            outStream << "Nearest neighbor: n/a" << std::endl;
+            outStream << "distanceLSH:\tn/a" << std::endl;
         }
 
-        sum += result.sum;
-
-        //if (result.found) ++ok;
+        outStream << "distanceTrue:\t" << trueResult.dist << std::endl;
+        outStream << "tLSH:\t" << std::fixed << (timeLSH * 1000.0f) << " ms" << std::endl;
+        outStream << "tTrue:\t" << std::fixed << (timeBF * 1000.0f) << " ms" << std::endl << std::endl;
     }
-
-    std::clock_t end = std::clock();
-    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-
-    std::cout << "time: " << elapsed_secs << "\tqps: " << 1 / (elapsed_secs / dataSet.getPointNum()) << std::endl;
-
-    std::cout << "stats: " << (100 * (dataSet.getPointNum() - (double)ok))/dataSet.getPointNum() << "% fail rate\tsum avg: " << (double)sum / dataSet.getPointNum() << std::endl;
-
-//========= Brute Force ================================================================================================================
-
-    std::clock_t begin_bf = std::clock();
-
-    for (unsigned int t = 0; t < 1000; ++t)
-    {
-        bool found = false;
-        double curMinDist = 0;
-        //unsigned index = 0;
-
-        for (unsigned i = 0; i < dataSet.getPointNum(); ++i)
-        {
-            double dist = distFunc(dataSet[i], dataSet[t]);
-            if ((dist < curMinDist || !found) && dist > 0/* NOTE: ignore existing values for testing -- remove when testSet is available */)
-            {
-                found = true;
-                curMinDist = dist;
-                //index = i;
-            }
-        }
-
-
-        //std::cout << "NN : " << t << " -> " << index << "\tdist: " << distFunc(dataSet[index], dataSet[t]) << std::endl;
-    }
-
-    std::clock_t end_bf = std::clock();
-    double elapsed_secs_bf = double(end_bf - begin_bf) / CLOCKS_PER_SEC;
-
-    std::cout << "time: " << elapsed_secs_bf << "\tqps: " << 1 / (elapsed_secs_bf / dataSet.getPointNum()) << std::endl;
 }
 
 int main(int argc, char const* argv[])
 {
     std::srand(std::time(nullptr));
 
-    std::ifstream file(argv[1]);
+    if (argc < 5)
+    {
+        std::cout << "err" << std::endl;
+        return 1;
+    }
+
+    std::string dataFile;
+    std::string queryFile;
+    std::string outputFile = "";
+    int hashTableNum = 6, functionsPerHashTable = 4;
+
+    for (; argc > 1; argc -= 2)
+    {
+        std::string flag(argv[argc - 2]);
+        std::string value(argv[argc - 1]);
+
+        if (flag == "-d")
+        {
+            dataFile = value;
+        }
+        else if (flag == "-q")
+        {
+            queryFile = value;
+        }
+        else if (flag == "-o")
+        {
+            outputFile = value;
+        }
+        else if (flag == "-L")
+        {
+            hashTableNum = std::stoi(value);
+        }
+        else if (flag == "-k")
+        {
+            functionsPerHashTable = std::stoi(value);
+        }
+        else
+        {
+            std::cout << "Invalid flag: " << flag << std::endl;
+            return 1;
+        }
+    }
+
+    std::ofstream outputFileStream(outputFile);
+
+    std::ostream* outStream = (outputFileStream.is_open()) ? &outputFileStream : &std::cout;
+
+    std::ifstream file(dataFile);
+    if (!file.is_open())
+    {
+        std::cout << "Data file cannot be oppened." << std::endl;
+        return 2;
+    }
     std::string metricSpace;
     file >> metricSpace >> metricSpace;
     file.close();
 
-    Parser::Flags metric;
     if (metricSpace == "euclidean")
     {
         using namespace Euclidean;
 
-        auto dataSet = Parser::parse<DataSet>(argv[1], metric);
+        auto testSet = Parser::parse<DataSet>(queryFile);
 
-        if (metric == Parser::Flags::euclidean)
+        if (testSet.metric != Parser::Flags::test) assert(0);
+
+        auto dataSet = Parser::parse<DataSet>(dataFile);
+
+        if (dataSet.metric == Parser::Flags::euclidean)
         {
-            L2::HashFunction hashFunc(15, 4, dataSet.getVectorDim(), 60.0f);
+            L2::HashFunction hashFunc(hashTableNum,functionsPerHashTable, dataSet.data.getVectorDim(), 8.0f);
             L2::DistanceFunction distFunc;
-            run(dataSet, hashFunc, distFunc);
+            lsh::HashSet<DataPoint> hashSet(hashFunc, distFunc, 125, dataSet.data);
+            run(dataSet.data, hashSet, distFunc, testSet.data, testSet.radius, *outStream);
         }
-        else if (metric == Parser::Flags::cosine)
+        else if (dataSet.metric == Parser::Flags::cosine)
         {
-            Cos::HashFunction hashFunc(2, 20, dataSet.getVectorDim());
+            Cos::HashFunction hashFunc(hashTableNum, functionsPerHashTable, dataSet.data.getVectorDim());
             Cos::DistanceFunction distFunc;
-            run(dataSet, hashFunc, distFunc);
+            lsh::HashSet<DataPoint> hashSet(hashFunc, distFunc, 125, dataSet.data);
+            run(dataSet.data, hashSet, distFunc, testSet.data, testSet.radius, *outStream);
         }
         else
         {
-            assert(0);
+            std::cout << "Metric not supported." << std::endl;
+            return 3;
         }
     }
     else if (metricSpace == "hamming")
     {
         using namespace Hamming;
 
-        auto dataSet = Parser::parse<DataSet>(argv[1], metric);
+        auto testSet = Parser::parse<DataSet>(queryFile);
 
-        if (metric == Parser::Flags::none)
+        if (testSet.metric != Parser::Flags::test) assert(0);
+
+        auto dataSet = Parser::parse<DataSet>(dataFile);
+
+        if (dataSet.metric == Parser::Flags::none)
         {
-            HashFunction hashFunc(4, 8, 64);
+            HashFunction hashFunc(hashTableNum,functionsPerHashTable, dataSet.data.getVectorDim());
             DistanceFunction distFunc;
-            run(dataSet, hashFunc, distFunc);
+            lsh::HashSet<DataPoint> hashSet(hashFunc, distFunc, 125, dataSet.data);
+            run(dataSet.data, hashSet, distFunc, testSet.data, testSet.radius, *outStream);
         }
         else
         {
-            assert(0);
+            std::cout << "Metric not supported." << std::endl;
+            return 3;
         }
     }
     else if (metricSpace == "matrix")
     {
         using namespace DistMatrix;
 
-        auto distFunc = Parser::parse<DistanceFunction>(argv[1], metric);
+        auto testDistFunc = Parser::parse<DistanceFunction>(queryFile);
 
-        if (metric == Parser::Flags::none)
+        if (testDistFunc.metric != Parser::Flags::test) assert(0);
+
+        auto distFunc = Parser::parse<DistanceFunction>(dataFile);
+
+        if (distFunc.metric == Parser::Flags::none)
         {
-            HashFunction hashFunc(4, 6, distFunc);
-            run(distFunc, hashFunc, distFunc);
+            HashFunction hashFunc(hashTableNum,functionsPerHashTable, &distFunc.data);
+            lsh::HashSet<DataPoint> hashSet(hashFunc, testDistFunc.data, 125, distFunc.data);
+            hashFunc.setDistFunction(&testDistFunc.data);
+            run(distFunc.data, hashSet, testDistFunc.data, testDistFunc.data, testDistFunc.radius, *outStream);
+            std::cout << testDistFunc.radius << std::endl;
         }
         else
         {
-            assert(0);
+            std::cout << "Metric not supported." << std::endl;
+            return 3;
         }
     }
     else
     {
-        assert(0);
+        std::cout << "Incompatible data file." << std::endl;
+        return 4;
     }
 
     return 0;
 }
-
-//        std::clock_t begin2 = std::clock();
-
-//        for (unsigned int i = 0; i < dataSet.getPointNum(); ++i)
-//        {
-//            auto x = distFunc(dataSet[i], dataSet[t]);
-//            if (x < 1300.0f)
-//            {
-//                if (x) std::cout << t << "| " << i << " : " << x << "\t" << ((found.contains(i)) ? "[OK]" : "[FAIL]") << std::endl;
-//            }
-//        }
-//
-//        std::clock_t end2 = std::clock();
-//        double elapsed_secs2 = double(end2 - begin2) / CLOCKS_PER_SEC;
-
-//        std::cout << "time: " << elapsed_secs2 << std::endl;
-
-/*
-int main (int argc, char* argv[])
-{
-    L2::HashFunction func(2, 4, 5, 2.0f);
-
-    L2::Point p;
-
-    p.reserve(5);
-
-    for (unsigned int i = 0; i < 5; ++i)
-    {
-        p.pushBack((double)std::rand()/RAND_MAX + 5.0f);
-    }
-
-    std::cout << p << std::endl;
-
-    for (auto x : func(p))
-    {
-        std::cout << x << std::endl;
-    }
-
-	return 0;
-}
-*/
