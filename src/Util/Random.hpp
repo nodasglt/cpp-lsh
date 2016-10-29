@@ -5,29 +5,41 @@
 
 namespace Util
 {
-    struct Random
+    class Random
     {
+    public:
         int nextInt () const;
 
         /*
-        ** Generate a number in [0, max]
+        ** Range: [0, max]
         */
         int nextInt (int max) const;
 
         /*
-        ** Generate a number in [1, max]
+        ** Range: [1, max]
         */
         int nextInt (int min, int max) const;
 
+        /*
+        ** Range: [0, 1]
+        */
         double nextDouble () const;
 
+        /*
+        ** Range: [min, max]
+        */
         double nextDouble (double min, double max) const;
     };
 
-    struct GaussianRandom
+    class GaussianRandom
     {
+    public:
         GaussianRandom();
 
+        /*
+        ** mean = 0
+        ** stddev = 1
+        */
         double nextDouble () const;
 
         double nextDouble (double mean, double stddev) const;

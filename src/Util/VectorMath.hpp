@@ -33,15 +33,6 @@ namespace Util
     {
         return dot(x, y) / (magnitude(x) * magnitude(y));
     }
-
-    template<typename VecType, typename ScalarType>
-    void mult (VecType& x, ScalarType y)
-    {
-        for (unsigned int i = 0; i < x.getLength(); ++i)
-        {
-            x[i] *= y;
-        }
-    }
 }
 
 #endif /* end of include guard: __UTIL_VECTORMATH_HPP__ */

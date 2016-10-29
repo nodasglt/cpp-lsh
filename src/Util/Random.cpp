@@ -12,7 +12,7 @@ namespace Util
     }
 
     /*
-    ** Generate a number in [0, max]
+    ** Generates a number in [0, max]
     */
     int Random::nextInt (int max) const
     {
@@ -29,10 +29,13 @@ namespace Util
         while ((randomMax - randomMax % (max + 1)) <= x);
 
         return x / (int)(randomMax / int64_t{ max + 1 });
+
+        // Alternatively:
+        // return (int)(nextDouble() * double{max});
     }
 
     /*
-    ** Generate a number in [min, max]
+    ** Generates a number in [min, max]
     */
     int Random::nextInt (int min, int max) const
     {
