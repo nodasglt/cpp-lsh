@@ -1,5 +1,5 @@
-#ifndef __LSH_HASHSET_HPP__
-#define __LSH_HASHSET_HPP__
+#ifndef __CLUSTERING_LOCSENHASH_HPP__
+#define __CLUSTERING_LOCSENHASH_HPP__
 
 #include <functional>
 
@@ -8,10 +8,10 @@
 #include "MetricSpace/Generic/Metric.hpp"
 #include "Containers/DynamicBitArray.hpp"
 
-namespace lsh
+namespace Clustering
 {
     template<typename PointType>
-    class HashSet
+    class LocSenHash
     {
     public:
         using Point = typename PointType::Type;
@@ -36,7 +36,7 @@ namespace lsh
         const DataSet& mDataSet;
 
     public:
-        HashSet (const HashFunction& hashFunc, const DistanceFunction& distFunc, unsigned hashMapSize, const DataSet& dataSet)
+        LocSenHash (const HashFunction& hashFunc, const DistanceFunction& distFunc, unsigned hashMapSize, const DataSet& dataSet)
             : mHashFunc(hashFunc), mDistFunc(distFunc), mHashMapArray(), mDataSet(dataSet)
         {
             mHashMapArray.reserve(mHashFunc.getKeyNum());
@@ -104,7 +104,7 @@ namespace lsh
             });
         }
 
-        QueryResult operator[] (ConstPointRef p)
+        QueryResult operator() (ConstPointRef p)
         {
             bool found = false;
             double minDist = 0;
@@ -147,4 +147,4 @@ void add (const DataSet& data)
 
 */
 
-#endif /* end of include guard: __LSH_HASHSET_HPP__ */
+#endif /* end of include guard: __CLUSTERING_LOCSENHASH_HPP__ */

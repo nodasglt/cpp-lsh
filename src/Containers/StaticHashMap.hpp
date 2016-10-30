@@ -92,6 +92,16 @@ class StaticHashMap
         throw std::invalid_argument( "Item not in HashTable." );
     }
 
+    const T& operator[] (const KeyType key)const
+    {
+        for (Pair& x : mTable[key % mTable.getLength()])
+        {
+            if (x.key == key) return x.target;
+        }
+
+        throw std::invalid_argument( "Item not in HashTable." );
+    }
+
     void for_each (const std::function<void (const Pair&)> func) const
     {
         for (const Array<Pair>& bucket : mTable)
