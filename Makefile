@@ -18,9 +18,9 @@ $(TARGET): $(OBJECTS)
 
 debug:
 	mv ./src/main.cpp ./main.cpp
-	mv ./debug.cpp ./src/main.cpp
+	mv ./debug.cpp ./src/debug.cpp
 	make
-	mv ./src/main.cpp ./debug.cpp
+	mv ./src/debug.cpp ./debug.cpp
 	mv ./main.cpp ./src/main.cpp
 
 clean:
