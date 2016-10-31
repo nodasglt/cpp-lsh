@@ -24,10 +24,11 @@ double execTime (std::function<void (void)> func)
 }
 
 template<typename DataPointType>
-void run (Clustering::BruteForceNN<DataPointType>& bf,
-        Clustering::LocSenHash<DataPointType>& lsh,
-        Generic::DataSet<DataPointType>& testSet, double R,
-        std::ostream& outStream)
+void runQuery (Clustering::BruteForceNN<DataPointType>& bf,
+               Clustering::LocSenHash<DataPointType>& lsh,
+               Generic::DataSet<DataPointType>& testSet,
+               double R,
+               std::ofstream& outStream)
 {
     for (unsigned i = 0; i < testSet.getPointNum(); ++i)
     {
@@ -68,59 +69,103 @@ void run (Clustering::BruteForceNN<DataPointType>& bf,
     }
 }
 
-void parseArgs (int argc, char const* argv[], std::string& dataFile, std::string& queryFile, std::string& outputFile, int &hashTableNum, int& functionsPerHashTable);
+template<typename DataPointType, typename DataSetType>
+void inputLoop (const DataSetType& dataSet,
+                const Generic::HashFunction<DataPointType>& hashFunc,
+                const Generic::DistanceFunction<DataPointType>& distFunc,
+                std::string queryFileName, std::ofstream outStream)
+{
+    if (!outStream.is_open())
+    {
+        std::cout << "Cannot create/open output file." << std::endl;
+        return;
+    }
+
+    Clustering::LocSenHash<DataPointType> lsh(hashFunc, distFunc, 125, dataSet);
+    Clustering::BruteForceNN<DataPointType> bf(distFunc, dataSet);
+
+    while (true)
+    {
+        try
+        {
+            auto result = Parser::parse<DataSetType>(queryFileName);
+
+            if (result.metric == Parser::Flags::test)
+            {
+                runQuery(bf, lsh, result.dataSet, result.radius, outStream);
+            }
+            else
+            {
+                std::cout << "Expecting query file. Data file was given." << std::endl;
+            }
+        }
+        catch (const std::runtime_error& e)
+        {
+            std::cout << e.what() << std::endl;
+        }
+
+        std::cout << "Repeat with different query? [y/N]: ";
+        std::string responce;
+        std::cin >> responce;
+        if (responce == "y" || responce == "Y")
+        {
+            std::cout << "Query file path: ";
+            std::cin >> queryFileName;
+        }
+        else break;
+    }
+}
+
+void parseArgs (int argc, char const* argv[],
+                std::string& dataFileName,
+                std::string& queryFileName,
+                std::string& outputFileName,
+                int& hashTableNum,
+                int& functionsPerHashTable);
 
 int main(int argc, char const* argv[])
 {
     std::srand(std::time(nullptr));
 
-    std::string dataFile;
-    std::string queryFile;
-    std::string outputFile = "";
+    std::string dataFileName = "";
+    std::string queryFileName = "";
+    std::string outputFileName = "";
+
     int hashTableNum = 6, functionsPerHashTable = 4;
 
-    parseArgs(argc, argv, dataFile, queryFile, outputFile, hashTableNum, functionsPerHashTable);
+    parseArgs(argc, argv, dataFileName, queryFileName,
+              outputFileName, hashTableNum, functionsPerHashTable);
 
-    std::ofstream outputFileStream(outputFile);
+    try {
 
-    //Output to file. If no file name is given, output to stdout.
-    std::ostream* outStream = (outputFileStream.is_open()) ? &outputFileStream : &std::cout;
-
-    std::ifstream file(dataFile);
-    if (!file.is_open())
-    {
-        std::cout << "Data file cannot be oppened." << std::endl;
-        return 2;
-    }
-    std::string metricSpace;
-    file >> metricSpace >> metricSpace;
-    file.close();
+    std::string metricSpace = Parser::getMetricSpace(dataFileName);
 
     if (metricSpace == "euclidean")
     {
         using namespace Euclidean;
 
-        auto testSet = Parser::parse<DataSet>(queryFile);
+        auto result = Parser::parse<DataSet>(dataFileName);
 
-        if (testSet.metric != Parser::Flags::test) assert(0);
-
-        auto dataSet = Parser::parse<DataSet>(dataFile);
-
-        if (dataSet.metric == Parser::Flags::euclidean)
+        if (result.metric == Parser::Flags::euclidean)
         {
-            L2::HashFunction hashFunc(hashTableNum,functionsPerHashTable, dataSet.data.getVectorDim(), 8.0f);
-            L2::DistanceFunction distFunc;
-            Clustering::LocSenHash<DataPoint> lsh(hashFunc, distFunc, 125, dataSet.data);
-            Clustering::BruteForceNN<DataPoint> bf(distFunc, dataSet.data);
-            run(bf, lsh, testSet.data, testSet.radius, *outStream);
+            inputLoop( result.dataSet,
+                       L2::HashFunction( hashTableNum,
+                                         functionsPerHashTable,
+                                         result.dataSet.getVectorDim(),
+                                         8.0f ),
+                      L2::DistanceFunction(),
+                      queryFileName,
+                      std::ofstream(outputFileName) );
         }
-        else if (dataSet.metric == Parser::Flags::cosine)
+        else if (result.metric == Parser::Flags::cosine)
         {
-            Cos::HashFunction hashFunc(hashTableNum, functionsPerHashTable, dataSet.data.getVectorDim());
-            Cos::DistanceFunction distFunc;
-            Clustering::LocSenHash<DataPoint> lsh(hashFunc, distFunc, 125, dataSet.data);
-            Clustering::BruteForceNN<DataPoint> bf(distFunc, dataSet.data);
-            run(bf, lsh, testSet.data, testSet.radius, *outStream);
+            inputLoop( result.dataSet,
+                       Cos::HashFunction( hashTableNum,
+                                          functionsPerHashTable,
+                                          result.dataSet.getVectorDim() ),
+                       Cos::DistanceFunction(),
+                       queryFileName,
+                       std::ofstream(outputFileName) );
         }
         else
         {
@@ -132,19 +177,17 @@ int main(int argc, char const* argv[])
     {
         using namespace Hamming;
 
-        auto testSet = Parser::parse<DataSet>(queryFile);
+        auto result = Parser::parse<DataSet>(dataFileName);
 
-        if (testSet.metric != Parser::Flags::test) assert(0);
-
-        auto dataSet = Parser::parse<DataSet>(dataFile);
-
-        if (dataSet.metric == Parser::Flags::none)
+        if (result.metric == Parser::Flags::none)
         {
-            HashFunction hashFunc(hashTableNum,functionsPerHashTable, dataSet.data.getVectorDim());
-            DistanceFunction distFunc;
-            Clustering::LocSenHash<DataPoint> lsh(hashFunc, distFunc, 125, dataSet.data);
-            Clustering::BruteForceNN<DataPoint> bf(distFunc, dataSet.data);
-            run(bf, lsh, testSet.data, testSet.radius, *outStream);
+            inputLoop( result.dataSet,
+                       HashFunction( hashTableNum,
+                                     functionsPerHashTable,
+                                     result.dataSet.getVectorDim() ),
+                       DistanceFunction(),
+                       queryFileName,
+                       std::ofstream(outputFileName) );
         }
         else
         {
@@ -156,19 +199,18 @@ int main(int argc, char const* argv[])
     {
         using namespace DistMatrix;
 
-        auto testDistFunc = Parser::parse<DistanceFunction>(queryFile);
+        auto result = Parser::parse<DataSet>(dataFileName);
 
-        if (testDistFunc.metric != Parser::Flags::test) assert(0);
-
-        auto distFunc = Parser::parse<DistanceFunction>(dataFile);
-
-        if (distFunc.metric == Parser::Flags::none)
+        if (result.metric == Parser::Flags::none)
         {
-            HashFunction hashFunc(hashTableNum,functionsPerHashTable, &distFunc.data);
-            Clustering::LocSenHash<DataPoint> lsh(hashFunc, testDistFunc.data, 125, distFunc.data);
-            hashFunc.setDistFunction(&testDistFunc.data);
-            Clustering::BruteForceNN<DataPoint> bf(testDistFunc.data, distFunc.data);
-            run(bf, lsh, testDistFunc.data, testDistFunc.radius, *outStream);
+            inputLoop( result.dataSet,
+                       HashFunction( hashTableNum,
+                                     functionsPerHashTable,
+                                     DistanceFunction(),
+                                     result.dataSet ),
+                       DistanceFunction(),
+                       queryFileName,
+                       std::ofstream(outputFileName) );
         }
         else
         {
@@ -178,21 +220,26 @@ int main(int argc, char const* argv[])
     }
     else
     {
-        std::cout << "Incompatible data file." << std::endl;
+        std::cout << "Incompatible data file. Unknown metric space: " + metricSpace + ")" << std::endl;
         return 4;
+    }
+
+    } catch (const std::runtime_error& e)
+    {
+        std::cout << e.what() << std::endl;
+        return 9;
     }
 
     return 0;
 }
 
-void parseArgs (int argc, char const* argv[], std::string& dataFile, std::string& queryFile, std::string& outputFile, int &hashTableNum, int& functionsPerHashTable)
+void parseArgs (int argc, char const* argv[],
+                std::string& dataFileName,
+                std::string& queryFileName,
+                std::string& outputFileName,
+                int& hashTableNum,
+                int& functionsPerHashTable)
 {
-    if (argc < 5)
-    {
-        std::cout << "Insufficient arguments" << std::endl;
-        assert(0);
-    }
-
     for (; argc > 1; argc -= 2)
     {
         std::string flag(argv[argc - 2]);
@@ -200,15 +247,15 @@ void parseArgs (int argc, char const* argv[], std::string& dataFile, std::string
 
         if (flag == "-d")
         {
-            dataFile = value;
+            dataFileName = value;
         }
         else if (flag == "-q")
         {
-            queryFile = value;
+            queryFileName = value;
         }
         else if (flag == "-o")
         {
-            outputFile = value;
+            outputFileName = value;
         }
         else if (flag == "-L")
         {
@@ -223,5 +270,23 @@ void parseArgs (int argc, char const* argv[], std::string& dataFile, std::string
             std::cout << "Invalid flag: " << flag << std::endl;
             assert(0);
         }
+    }
+
+    if (dataFileName == "")
+    {
+        std::cout << "Data file path: ";
+        std::cin >> dataFileName;
+    }
+
+    if (queryFileName == "")
+    {
+        std::cout << "Query file path: ";
+        std::cin >> queryFileName;
+    }
+
+    if (outputFileName == "")
+    {
+        std::cout << "Output file path: ";
+        std::cin >> outputFileName;
     }
 }
