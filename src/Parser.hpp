@@ -8,7 +8,7 @@
 
 #include "MetricSpace/Euclidean/DataSet.hpp"
 #include "MetricSpace/Hamming/DataSet.hpp"
-#include "MetricSpace/DistMatrix/DistanceFunction.hpp"
+#include "MetricSpace/DistMatrix/DataSet.hpp"
 
 namespace Parser
 {
@@ -17,10 +17,12 @@ namespace Parser
     template<typename DataSetType>
     struct Result
     {
-        DataSetType data;
+        DataSetType dataSet;
         Flags metric;
         double radius;
     };
+
+    std::string getMetricSpace(const std::string& fileName);
 
     template<typename DataSetType>
     Result<DataSetType> parse(const std::string& filename);
@@ -32,7 +34,7 @@ namespace Parser
     Result<MetricSpace::Hamming::DataSet> parse<MetricSpace::Hamming::DataSet>(const std::string& fileName);
 
     template<>
-    Result<MetricSpace::DistMatrix::DistanceFunction> parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName);
+    Result<MetricSpace::DistMatrix::DataSet> parse<MetricSpace::DistMatrix::DataSet>(const std::string& fileName);
 }
 
 #endif /* end of include guard: __PARSER_HPP__ */

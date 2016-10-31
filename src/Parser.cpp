@@ -2,9 +2,26 @@
 
 namespace Parser
 {
+    using namespace MetricSpace;
+
+    std::string getMetricSpace(const std::string& fileName)
+    {
+       std::ifstream file(fileName);
+
+       if (!file.is_open()) throw std::runtime_error("File " + fileName + " cannot be oppened.");
+
+       std::string metricSpace;
+
+       file >> metricSpace >> metricSpace;
+
+       return metricSpace;
+    }
+
     unsigned getVectorNum(const std::string& fileName)
     {
        std::ifstream file(fileName);
+
+       if (!file.is_open()) throw std::runtime_error("File " + fileName + " cannot be oppened.");
 
        file.unsetf(std::ios_base::skipws);
 
@@ -14,6 +31,8 @@ namespace Parser
     unsigned getVectorDim(const std::string& fileName, int skipNum)
     {
        std::ifstream file(fileName);
+
+       if (!file.is_open()) throw std::runtime_error("File " + fileName + " cannot be oppened.");
 
        for (int i = 0; i < skipNum; ++i)
        {
@@ -42,9 +61,11 @@ namespace Parser
     }
 
     template<>
-    Result<MetricSpace::Euclidean::DataSet> parse<MetricSpace::Euclidean::DataSet>(const std::string& fileName)
+    Result<Euclidean::DataSet> parse<Euclidean::DataSet>(const std::string& fileName)
     {
        std::ifstream file(fileName);
+
+       if (!file.is_open()) throw std::runtime_error("File " + fileName + " cannot be oppened.");
 
        /* check metric space type */
        std::string metricSpace;
@@ -66,7 +87,7 @@ namespace Parser
        else
        {
            file >> metricSpace;
-           if (metricSpace != "euclidean") throw;
+           if (metricSpace != "euclidean") throw std::runtime_error("Incompatible data file: " + fileName);
 
            /* store requested metric */
            std::string metric;
@@ -79,7 +100,7 @@ namespace Parser
            {
                returnFlags = Flags::cosine;
            }
-           else throw;
+           else throw std::runtime_error("Incompatible data file: " + fileName + " (Unknown metric: " + metric + ")");
 
            skip = 2;
        }
@@ -102,9 +123,11 @@ namespace Parser
     }
 
     template<>
-    Result<MetricSpace::Hamming::DataSet> parse<MetricSpace::Hamming::DataSet>(const std::string& fileName)
+    Result<Hamming::DataSet> parse<Hamming::DataSet>(const std::string& fileName)
     {
         std::ifstream file(fileName);
+
+        if (!file.is_open()) throw std::runtime_error("File " + fileName + " cannot be oppened.");
 
         std::string metricSpace;
         file >> metricSpace;
@@ -121,7 +144,7 @@ namespace Parser
         else
         {
             file >> metricSpace;
-            if (metricSpace != "hamming") throw;
+            if (metricSpace != "hamming") throw std::runtime_error("Incompatible data file: " + fileName);
 
             returnFlags = Flags::none;
         }
@@ -159,9 +182,11 @@ namespace Parser
     }
 
     template<>
-    Result<MetricSpace::DistMatrix::DistanceFunction> parse<MetricSpace::DistMatrix::DistanceFunction>(const std::string& fileName)
+    Result<DistMatrix::DataSet> parse<DistMatrix::DataSet>(const std::string& fileName)
     {
         std::ifstream file(fileName);
+
+        if (!file.is_open()) throw std::runtime_error("File " + fileName + " cannot be oppened.");
 
         std::string metricSpace;
         file >> metricSpace;
@@ -189,12 +214,12 @@ namespace Parser
                 }
             }
 
-            return {std::move(vecs), returnFlags, R};
+            return { { DistMatrix::DataPoint::Flag::test, std::move(vecs) }, returnFlags, R };
         }
         else
         {
             file >> metricSpace;
-            if (metricSpace != "matrix") throw;
+            if (metricSpace != "matrix") throw std::runtime_error("Incompatible data file: " + fileName);
 
             returnFlags = Flags::none;
 
@@ -214,7 +239,7 @@ namespace Parser
                 }
             }
 
-            return {std::move(vecs), returnFlags, R};
+            return { { DistMatrix::DataPoint::Flag::data, std::move(vecs) }, returnFlags, R };
         }
     }
 }
