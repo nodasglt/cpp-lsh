@@ -203,12 +203,14 @@ int main(int argc, char const* argv[])
 
         if (result.metric == Parser::Flags::none)
         {
+            DistanceFunction distFunc;
+
             inputLoop( result.dataSet,
                        HashFunction( hashTableNum,
                                      functionsPerHashTable,
-                                     DistanceFunction(),
+                                     distFunc,
                                      result.dataSet ),
-                       DistanceFunction(),
+                       distFunc,
                        queryFileName,
                        std::ofstream(outputFileName) );
         }
