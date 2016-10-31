@@ -1,24 +1,26 @@
 #include "DistanceFunction.hpp"
+#include <cassert>
 
 namespace MetricSpace
 {
     namespace DistMatrix
     {
-        DistanceFunction::DistanceFunction(Matrix<double>&& distances) : mDistanceMatrix(std::move(distances)) {}
-
-        double DistanceFunction::operator() (unsigned x, unsigned y) const
+        double DistanceFunction::operator() (ConstPointRef x, ConstPointRef y) const
         {
-            return mDistanceMatrix(x, y);
-        }
+            if (x.flag == y.flag)
+            {
+                if (x.flag == DataPoint::Flag::test)
+                {
+                    assert(0);
+                }
 
-        unsigned DistanceFunction::operator[] (unsigned int i) const
-        {
-            return i;
-        }
+                if (x.flag == DataPoint::Flag::data)
+                {
+                    return (x.id < y.id) ? x.values[y.id] : y.values[x.id];
+                }
+            }
 
-        unsigned int DistanceFunction::getPointNum () const
-        {
-            return mDistanceMatrix.getColSize();
+            return (x.flag == DataPoint::Flag::test) ? x.values[y.id] : y.values[x.id];
         }
     }
 }

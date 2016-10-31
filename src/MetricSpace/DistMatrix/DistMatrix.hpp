@@ -1,13 +1,21 @@
 #ifndef __METRICSPACE_DISTMATRIX_HPP__
 #define __METRICSPACE_DISTMATRIX_HPP__
 
+#include <Containers/Block.hpp>
+
 namespace MetricSpace {
 namespace DistMatrix
 {
     struct DataPoint
     {
-        using Type = unsigned;
-        using ConstRefType = unsigned;
+        enum class Flag { data, test };
+
+        Flag flag;
+        unsigned id;
+        Block<double> values;
+
+        using Type = DataPoint;
+        using ConstRefType = DataPoint;
     };
 }}
 

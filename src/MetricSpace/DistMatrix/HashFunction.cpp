@@ -7,14 +7,14 @@ namespace MetricSpace
 {
     namespace DistMatrix
     {
-        HashFunction::HashFunction (unsigned int hashTablesNum, unsigned int functionsPerHashTable, const DistanceFunction* dist)
-         : Generic::HashFunction<DataPoint>(hashTablesNum), mDistFunc(dist), mLines(hashTablesNum, functionsPerHashTable)
+        HashFunction::HashFunction (unsigned int hashTablesNum, unsigned int functionsPerHashTable, const DistanceFunction& dist, const DataSet& data)
+         : Generic::HashFunction<DataPoint>(hashTablesNum), mDataSet(data), mDistFunc(dist), mLines(hashTablesNum, functionsPerHashTable)
         {
             assert(functionsPerHashTable <= 64);
 
             Util::Random uniformRandom;
 
-            auto pointNum = mDistFunc->getPointNum();
+            auto pointNum = mDataSet.getPointNum();
 
             for (unsigned i = 0; i < hashTablesNum; ++i)
             {
@@ -30,12 +30,12 @@ namespace MetricSpace
 
                     mLines(i, j).x = x;
                     mLines(i, j).y = y;
-                    mLines(i, j).length = (*mDistFunc)(x, y);
+                    mLines(i, j).length = mDistFunc(mDataSet[x], mDataSet[y]);
 
                     double sum = 0.0;
                     for(unsigned n = 0; n < pointNum; ++n)
                     {
-                        sum += project(mLines(i, j), n);
+                        sum += project(mLines(i, j), mDataSet[n]);
                     }
 
                     double midValue = sum / (double)pointNum;
@@ -44,15 +44,11 @@ namespace MetricSpace
                 }
             }
         }
-        void HashFunction::setDistFunction (const DistanceFunction* dist)
-        {
-            mDistFunc = dist;
-        }
 
         double HashFunction::project (line l, ConstPointRef indexToProject) const
         {
-            auto distX = (*mDistFunc)(indexToProject, l.x);
-            auto distY = (*mDistFunc)(indexToProject, l.y);
+            auto distX = mDistFunc(indexToProject, mDataSet[l.x]);
+            auto distY = mDistFunc(indexToProject, mDataSet[l.y]);
 
             return (distX * distX + distY * distY + l.length * l.length) / (2.0f * l.length);
         }
