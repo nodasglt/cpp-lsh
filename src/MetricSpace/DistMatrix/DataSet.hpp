@@ -3,7 +3,7 @@
 
 #include "Containers/Matrix.hpp"
 #include "../Generic/DataSet.hpp"
-#include "DistMatrix.hpp"
+#include "DataPoint.hpp"
 
 namespace MetricSpace {
 namespace DistMatrix

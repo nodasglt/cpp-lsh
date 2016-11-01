@@ -1,7 +1,7 @@
 #ifndef __METRICSPACE_DISTMATRIX_METRIC_HPP__
 #define __METRICSPACE_DISTMATRIX_METRIC_HPP__
 
-#include "DistMatrix.hpp"
+#include "DataPoint.hpp"
 #include "DistanceFunction.hpp"
 #include "HashFunction.hpp"
 #include "DataSet.hpp"

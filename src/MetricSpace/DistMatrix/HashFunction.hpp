@@ -2,7 +2,7 @@
 #define __METRICSPACE_DISTMATRIX_HASHFUNCTION_HPP__
 
 #include "Containers/Matrix.hpp"
-#include "DistMatrix.hpp"
+#include "DataPoint.hpp"
 #include "../Generic/HashFunction.hpp"
 #include "../Generic/DataSet.hpp"
 #include "../Generic/DistanceFunction.hpp"

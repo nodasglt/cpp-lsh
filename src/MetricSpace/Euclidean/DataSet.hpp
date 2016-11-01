@@ -7,7 +7,7 @@
 
 #include "Containers/Matrix.hpp"
 #include "../Generic/DataSet.hpp"
-#include "Euclidean.hpp"
+#include "DataPoint.hpp"
 
 namespace MetricSpace {
 namespace Euclidean

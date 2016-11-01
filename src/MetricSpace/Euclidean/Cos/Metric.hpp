@@ -1,7 +1,7 @@
 #ifndef __METRICSPACE_EUCLIDEAN_COS_METRIC_HPP__
 #define __METRICSPACE_EUCLIDEAN_COS_METRIC_HPP__
 
-#include "../Euclidean.hpp"
+#include "../DataPoint.hpp"
 #include "../DataSet.hpp"
 #include "DistanceFunction.hpp"
 #include "HashFunction.hpp"

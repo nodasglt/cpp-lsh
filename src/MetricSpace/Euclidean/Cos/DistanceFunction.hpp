@@ -2,7 +2,7 @@
 #define __METRICSPACE_EUCLIDEAN_COS_DISTANCEFUNCTION_HPP__
 
 #include "../../Generic/DistanceFunction.hpp"
-#include "../Euclidean.hpp"
+#include "../DataPoint.hpp"
 
 namespace MetricSpace {
 namespace Euclidean

@@ -32,7 +32,10 @@ namespace Clustering
     private:
         const HashFunction& mHashFunc;
         const DistanceFunction& mDistFunc;
+
+        //Map hash key to an array of data set indices
         Array<StaticHashMap<uint64_t, Array<unsigned>>> mHashMapArray;
+        
         const DataSet& mDataSet;
 
     public:
@@ -104,6 +107,7 @@ namespace Clustering
             });
         }
 
+        // Reurn the aproximate nearest neighbor
         QueryResult operator() (ConstPointRef p)
         {
             bool found = false;

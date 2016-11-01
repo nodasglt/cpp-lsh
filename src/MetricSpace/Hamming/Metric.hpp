@@ -1,7 +1,7 @@
 #ifndef __METRICSPACE_HAMMING_METRIC_HPP__
 #define __METRICSPACE_HAMMING_METRIC_HPP__
 
-#include "Hamming.hpp"
+#include "DataPoint.hpp"
 #include "DataSet.hpp"
 #include "DistanceFunction.hpp"
 #include "HashFunction.hpp"

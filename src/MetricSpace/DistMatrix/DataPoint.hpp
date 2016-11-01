@@ -10,8 +10,13 @@ namespace DistMatrix
     {
         enum class Flag { data, test };
 
+        //indicates whether it should be treated as a data point or a query point
         Flag flag;
+
+        //its index in the data/test set
         unsigned id;
+
+        //reference to the data/test set row containing the distances to all the other points in the data set
         Block<double> values;
 
         using Type = DataPoint;

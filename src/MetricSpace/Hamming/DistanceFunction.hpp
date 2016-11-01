@@ -2,7 +2,7 @@
 #define __METRICSPACE_HAMMING_DISTANCEFUNCTION_HPP__
 
 #include "../Generic/DistanceFunction.hpp"
-#include "Hamming.hpp"
+#include "DataPoint.hpp"
 
 namespace MetricSpace
 {

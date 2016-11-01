@@ -2,7 +2,7 @@
 
 using namespace MetricSpace::Hamming;
 
-DataSet::DataSet(Array<BitArray<64>>&& m, unsigned dim) : mVectors(std::move(m)), mDim(dim) {}
+DataSet::DataSet(Array<Point>&& m, unsigned dim) : mVectors(std::move(m)), mDim(dim) {}
 
 DataSet::DataSet(DataSet&& other) : mVectors(std::move(other.mVectors)) {}
 

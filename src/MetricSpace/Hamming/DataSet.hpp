@@ -7,7 +7,7 @@
 
 #include "Containers/Array.hpp"
 #include "../Generic/DataSet.hpp"
-#include "Hamming.hpp"
+#include "DataPoint.hpp"
 
 namespace MetricSpace {
 namespace Hamming
@@ -15,11 +15,11 @@ namespace Hamming
     class DataSet : public Generic::DataSet<DataPoint>
     {
      private:
-        Array<BitArray<64>> mVectors;
+        Array<Point> mVectors;
         unsigned mDim;
 
      public:
-         DataSet(Array<BitArray<64>>&& m, unsigned dim);
+         DataSet(Array<Point>&& m, unsigned dim);
 
          DataSet(DataSet&& other);
          DataSet(const DataSet& other);

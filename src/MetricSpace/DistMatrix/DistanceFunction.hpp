@@ -2,7 +2,7 @@
 #define __METRICSPACE_DISTMATRIX_DISTANCEFUNCTION_HPP__
 
 #include "../Generic/DistanceFunction.hpp"
-#include "DistMatrix.hpp"
+#include "DataPoint.hpp"
 
 namespace MetricSpace
 {

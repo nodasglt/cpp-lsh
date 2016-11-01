@@ -4,7 +4,7 @@
 #include "Containers/Array.hpp"
 #include "Containers/Matrix.hpp"
 #include "../../Generic/HashFunction.hpp"
-#include "../Euclidean.hpp"
+#include "../DataPoint.hpp"
 
 namespace MetricSpace {
 namespace Euclidean

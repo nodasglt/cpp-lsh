@@ -4,7 +4,7 @@
 #include "Containers/Array.hpp"
 #include "Containers/Matrix.hpp"
 #include "../Generic/HashFunction.hpp"
-#include "Hamming.hpp"
+#include "DataPoint.hpp"
 
 namespace MetricSpace
 {
