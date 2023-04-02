@@ -1,0 +1,270 @@
+Query: item_idS1
+R-near neighbors:
+item433
+Nearest neighbor: item433
+distanceLSH:	0.897896
+distanceTrue:	0.897896
+tLSH:	0.010000 ms
+tTrue:	0.256000 ms
+
+Query: item_idS2
+R-near neighbors:
+item853
+Nearest neighbor: item853
+distanceLSH:	0.964682
+distanceTrue:	0.964682
+tLSH:	0.009000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS3
+R-near neighbors:
+item874
+Nearest neighbor: item874
+distanceLSH:	0.922112
+distanceTrue:	0.922112
+tLSH:	0.008000 ms
+tTrue:	0.271000 ms
+
+Query: item_idS4
+R-near neighbors:
+item239
+Nearest neighbor: item239
+distanceLSH:	0.958862
+distanceTrue:	0.958862
+tLSH:	0.009000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS5
+R-near neighbors:
+item45
+Nearest neighbor: item45
+distanceLSH:	0.929698
+distanceTrue:	0.929698
+tLSH:	0.008000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS6
+R-near neighbors:
+item550
+Nearest neighbor: item550
+distanceLSH:	0.824978
+distanceTrue:	0.824978
+tLSH:	0.009000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS7
+R-near neighbors:
+item92
+Nearest neighbor: item92
+distanceLSH:	0.960385
+distanceTrue:	0.960385
+tLSH:	0.009000 ms
+tTrue:	0.248000 ms
+
+Query: item_idS8
+R-near neighbors:
+item733
+Nearest neighbor: item733
+distanceLSH:	0.905230
+distanceTrue:	0.905230
+tLSH:	0.009000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS9
+R-near neighbors:
+item370
+Nearest neighbor: item370
+distanceLSH:	1.024315
+distanceTrue:	1.024315
+tLSH:	0.009000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS10
+R-near neighbors:
+item449
+Nearest neighbor: item449
+distanceLSH:	1.034738
+distanceTrue:	1.034738
+tLSH:	0.009000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS11
+R-near neighbors:
+item39
+Nearest neighbor: item39
+distanceLSH:	0.999396
+distanceTrue:	0.999396
+tLSH:	0.009000 ms
+tTrue:	0.248000 ms
+
+Query: item_idS12
+R-near neighbors:
+item823
+Nearest neighbor: item823
+distanceLSH:	0.984165
+distanceTrue:	0.984165
+tLSH:	0.009000 ms
+tTrue:	0.243000 ms
+
+Query: item_idS13
+R-near neighbors:
+item451
+Nearest neighbor: item451
+distanceLSH:	1.011311
+distanceTrue:	1.011311
+tLSH:	0.009000 ms
+tTrue:	0.247000 ms
+
+Query: item_idS14
+R-near neighbors:
+item336
+Nearest neighbor: item336
+distanceLSH:	0.880969
+distanceTrue:	0.880969
+tLSH:	0.008000 ms
+tTrue:	0.241000 ms
+
+Query: item_idS15
+R-near neighbors:
+item418
+Nearest neighbor: item418
+distanceLSH:	1.042381
+distanceTrue:	1.042381
+tLSH:	0.009000 ms
+tTrue:	0.243000 ms
+
+Query: item_idS16
+R-near neighbors:
+item941
+Nearest neighbor: item941
+distanceLSH:	1.024697
+distanceTrue:	1.024697
+tLSH:	0.008000 ms
+tTrue:	0.243000 ms
+
+Query: item_idS17
+R-near neighbors:
+item749
+Nearest neighbor: item749
+distanceLSH:	1.068431
+distanceTrue:	1.068431
+tLSH:	0.009000 ms
+tTrue:	0.282000 ms
+
+Query: item_idS18
+R-near neighbors:
+item604
+Nearest neighbor: item604
+distanceLSH:	1.072595
+distanceTrue:	1.072595
+tLSH:	0.009000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS19
+R-near neighbors:
+item593
+Nearest neighbor: item593
+distanceLSH:	0.881385
+distanceTrue:	0.881385
+tLSH:	0.008000 ms
+tTrue:	0.248000 ms
+
+Query: item_idS20
+R-near neighbors:
+item142
+Nearest neighbor: item142
+distanceLSH:	0.876988
+distanceTrue:	0.876988
+tLSH:	0.008000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS21
+R-near neighbors:
+item98
+Nearest neighbor: item98
+distanceLSH:	0.839206
+distanceTrue:	0.839206
+tLSH:	0.008000 ms
+tTrue:	0.248000 ms
+
+Query: item_idS22
+R-near neighbors:
+item49
+Nearest neighbor: item49
+distanceLSH:	0.933668
+distanceTrue:	0.933668
+tLSH:	0.008000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS23
+R-near neighbors:
+item204
+Nearest neighbor: item204
+distanceLSH:	1.060086
+distanceTrue:	1.060086
+tLSH:	0.008000 ms
+tTrue:	0.241000 ms
+
+Query: item_idS24
+R-near neighbors:
+item288
+Nearest neighbor: item288
+distanceLSH:	0.859072
+distanceTrue:	0.859072
+tLSH:	0.008000 ms
+tTrue:	0.241000 ms
+
+Query: item_idS25
+R-near neighbors:
+item219
+Nearest neighbor: item219
+distanceLSH:	1.020893
+distanceTrue:	1.020893
+tLSH:	0.008000 ms
+tTrue:	0.247000 ms
+
+Query: item_idS26
+R-near neighbors:
+item372
+Nearest neighbor: item372
+distanceLSH:	0.883252
+distanceTrue:	0.883252
+tLSH:	0.008000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS27
+R-near neighbors:
+item291
+Nearest neighbor: item291
+distanceLSH:	1.021836
+distanceTrue:	1.021836
+tLSH:	0.008000 ms
+tTrue:	0.247000 ms
+
+Query: item_idS28
+R-near neighbors:
+item290
+Nearest neighbor: item290
+distanceLSH:	1.042599
+distanceTrue:	1.042599
+tLSH:	0.009000 ms
+tTrue:	0.243000 ms
+
+Query: item_idS29
+R-near neighbors:
+item369
+Nearest neighbor: item369
+distanceLSH:	1.063647
+distanceTrue:	1.063647
+tLSH:	0.008000 ms
+tTrue:	0.242000 ms
+
+Query: item_idS30
+R-near neighbors:
+item529
+Nearest neighbor: item529
+distanceLSH:	1.023773
+distanceTrue:	1.023773
+tLSH:	0.008000 ms
+tTrue:	0.241000 ms
+
